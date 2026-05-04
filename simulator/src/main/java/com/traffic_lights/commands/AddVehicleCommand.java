@@ -17,13 +17,8 @@ public record AddVehicleCommand(
 
     @Override
     public List<String> execute(Intersection intersection) {
-        // Tworzymy obiekt pojazdu na podstawie danych z komendy
         Vehicle vehicle = new Vehicle(vehicleId, startRoad, endRoad);
-        
-        // Zlecamy skrzyżowaniu umieszczenie auta na odpowiedniej drodze
         intersection.addVehicleToQueue(vehicle);
-        
-        // Ta komenda nie wypuszcza aut ze skrzyżowania, więc zwraca pustą listę
         return Collections.emptyList();
     }
 }

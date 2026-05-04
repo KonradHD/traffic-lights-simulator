@@ -1,13 +1,22 @@
 package com.traffic_lights;
 
-/**
- * Hello world!
- *
- */
+import com.traffic_lights.dto.SimulationInput;
+import com.traffic_lights.dto.SimulationOutput;
+import com.traffic_lights.engine.IntersectionSimulator;
+import com.traffic_lights.parsing.InputParser;
+import com.traffic_lights.parsing.OutputParser;
+
+
 public class App 
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        SimulationInput input = InputParser.readFile("example1.json");
+        IntersectionSimulator simulator = new IntersectionSimulator();
+
+        SimulationOutput output = simulator.runSimulation(input.commands(), "standard");
+
+        OutputParser.saveOutput("example1", output);
+
     }
 }

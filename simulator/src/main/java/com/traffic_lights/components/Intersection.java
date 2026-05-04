@@ -3,6 +3,8 @@ package com.traffic_lights.components;
 import java.util.*;
 
 import com.traffic_lights.config.StartingPhase;
+import static com.traffic_lights.dto.VehiclesDTO.createVehiclesDTO;
+import com.traffic_lights.dto.VehiclesDTO;
 
 public class Intersection {
     
