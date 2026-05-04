@@ -1,8 +1,14 @@
 package com.traffic_lights.commands;
 
-public class StepCommand implements Command{
+import java.util.List;
+
+import com.traffic_lights.components.Intersection;
+
+public record StepCommand() implements Command{
     
-    public void execute(){
-        
+    @Override
+    public List<String> execute(Intersection intersection) {
+        return intersection.processStep(); 
     }
+    
 }

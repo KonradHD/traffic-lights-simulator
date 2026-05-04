@@ -1,31 +1,48 @@
 package com.traffic_lights.components;
 
+import com.traffic_lights.config.TimeConfig;
+
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
+// @AllArgsConstructor
 public class LightActivity {
     
     private LightState state;
-    private Integer timeToChange;
-
-
-    public void changeState(LightState newState, Integer duration){
-        this.state = newState;
-        this.timeToChange = duration;
-    }
+    private int currentDuration;
+    private final TimeConfig timeConfig;
 
 
     public void changeState(LightState newState){
         this.state = newState;
-        this.timeToChange = 30;
+        this.currentDuration = this.timeConfig.getDurationFor(state);
     }
 
+    public LightActivity(LightState state, TimeConfig timeConfig){
+        this.state = state;
+        this.timeConfig = timeConfig;
+        this.currentDuration = this.timeConfig.getDurationFor(this.state);
+    }
+
+
+    public void nextPhase(){
+        LightState nextState = this.state.nextState();
+        changeState(nextState);
+    }
+
+
     public void nextStep(){
-        if(timetoChange > 1){
-            timeToChange--;
+        if(this.currentDuration > 1){
+            this.currentDuration--;
+        }else{
+            nextPhase();
         }
-        else if(timeToChange == 1){
-            
-        }
+    }
+
+    public void addTime(int addingTime){
+        this.currentDuration += addingTime;
+    }
+    
+    public LightState getState() {
+        return this.state;
     }
 }
