@@ -1,5 +1,7 @@
-package com.traffic_lights.components;
+package com.traffic_lights.dto;
 
+
+import com.traffic_lights.components.Direction;
 
 public record Vehicle(
 

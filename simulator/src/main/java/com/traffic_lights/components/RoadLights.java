@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 
 @Getter
-// @AllArgsConstructor
+@AllArgsConstructor
 public class RoadLights {
     // light for driving straight or right
     private LightActivity mainLight; 
@@ -19,12 +19,6 @@ public class RoadLights {
     // conditional driving right
     private LightActivity rightTurnArrow; 
 
-
-    public RoadLights(LightActivity mainLight, LightActivity leftTurnArrow, LightActivity rightTurnArrow){
-        this.mainLight = mainLight;
-        this.leftTurnArrow = leftTurnArrow;
-        this.rightTurnArrow = rightTurnArrow;
-    }
 
     public LightActivity getMainLight(){
         return mainLight;
@@ -44,11 +38,44 @@ public class RoadLights {
         }
 
         if(leftTurnArrow != null){
-            mainLight.nextStep();
+            leftTurnArrow.nextStep();
         }
 
         if(rightTurnArrow != null){
             rightTurnArrow.nextStep();
+        }
+    }
+
+    public void applyAllowedTurns(List<Turn> allowedTurns) {
+        if (allowedTurns == null) {
+            allowedTurns = new ArrayList<>();
+        }
+
+        // 1. Główne światło (zwykle odpowiada za jazdę PROSTO, a czasem w PRAWO)
+        if (mainLight != null) {
+            if (allowedTurns.contains(Turn.STRAIGHT) || (allowedTurns.contains(Turn.RIGHT) && rightTurnArrow == null)) {
+                mainLight.changeState(LightState.GREEN);
+            } else {
+                mainLight.changeState(LightState.RED);
+            }
+        }
+
+        // 2. Strzałka w lewo
+        if (leftTurnArrow != null) {
+            if (allowedTurns.contains(Turn.LEFT)) {
+                leftTurnArrow.changeState(LightState.GREEN);
+            } else {
+                leftTurnArrow.changeState(LightState.RED);
+            }
+        }
+
+        // 3. Strzałka w prawo
+        if (rightTurnArrow != null) {
+            if (allowedTurns.contains(Turn.RIGHT)) {
+                rightTurnArrow.changeState(LightState.GREEN);
+            } else {
+                rightTurnArrow.changeState(LightState.RED);
+            }
         }
     }
 

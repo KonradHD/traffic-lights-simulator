@@ -4,5 +4,8 @@ public enum Turn {
     STRAIGHT, 
     LEFT, 
     RIGHT
-    // TURNBACK
+    // TURNBACK,
+    // LEFT_CONDITIONALLY
+    // RIGHT_CONDITIONALLY
+    //TURNBACK_CONDITIONALLY
 }

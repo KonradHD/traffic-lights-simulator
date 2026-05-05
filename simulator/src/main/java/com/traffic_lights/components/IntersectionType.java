@@ -12,16 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
-// @Getter
+ @Getter
 // @AllArgsConstructor
 public class IntersectionType {
 
     private String typeName;
     private Map<Direction, RoadLights> roadsConfig;
 
-    public Map<Direction, RoadLights> getRoadsConfig(){
-        return roadsConfig;
-    }
 
     public IntersectionType(String typeName, Map<Direction, RoadLights> roadsConfig){
         this.typeName = typeName;
@@ -29,7 +26,7 @@ public class IntersectionType {
         this.roadsConfig = roadsConfig.entrySet().stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
-                entry -> entry.getValue(),
+                Map.Entry::getValue,
                 (existing, replacement) -> existing,
                 () -> new EnumMap<>(Direction.class)
             ));

@@ -5,6 +5,7 @@ import java.time.Instant;
 
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.traffic_lights.dto.SimulationOutput;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,8 @@ public class OutputParser {
     private final static ObjectMapper mapper = new ObjectMapper();
 
     public static void saveOutput(String fileName, SimulationOutput output){
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         Long epochs = Instant.now().getEpochSecond();
         String fullPath = "%s%d_%s".formatted(outputPath, epochs, fileName);
 

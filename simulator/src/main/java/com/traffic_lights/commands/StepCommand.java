@@ -3,12 +3,15 @@ package com.traffic_lights.commands;
 import java.util.List;
 
 import com.traffic_lights.components.Intersection;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public record StepCommand() implements Command{
     
     @Override
     public List<String> execute(Intersection intersection) {
-        return intersection.processStep(); 
+        log.info("Executing step command...");
+        return intersection.processStep();
     }
     
 }

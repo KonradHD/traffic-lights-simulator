@@ -1,42 +1,103 @@
 package com.traffic_lights.components;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
-import com.traffic_lights.config.StartingPhase;
-import static com.traffic_lights.dto.VehiclesDTO.createVehiclesDTO;
-import com.traffic_lights.dto.VehiclesDTO;
+import com.traffic_lights.dto.Vehicle;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Intersection {
-    
+
+    @Getter
+    private final String intersectionType;
+
+    @Getter
+    private final IntersectionStats stats;
+
     private final Map<Direction, Queue<Vehicle>> roads = new HashMap<>();
-    private final String intersectiontType;
     private final Map<Direction, RoadLights> roadsLights;
-    private int lastPhaseChangeStep = 0;
-    private int stepsNumber = 0;
+    private List<IntersectionPhase> phases;
+    private int currentPhaseIndex;
 
     public Intersection(String type) {
-        intersectiontType = type;
+
+        roads.put(Direction.EAST, new ArrayDeque<>());
+        roads.put(Direction.WEST, new ArrayDeque<>());
+        roads.put(Direction.NORTH, new ArrayDeque<>());
+        roads.put(Direction.SOUTH, new ArrayDeque<>());
+        this.stats = new IntersectionStats(0, 0, 0, 0, 0);
+
         switch (type.toUpperCase()) {
             case "STANDARD" -> {
+                intersectionType = type.toUpperCase();
+                phases = PhasesBuilder.createStandardPhases();
                 roadsLights = IntersectionType.createStandard().getRoadsConfig();
             }
             case "LEFT_TURN_ARROWS" -> {
+                intersectionType = type.toUpperCase();
                 roadsLights = IntersectionType.createWithLeftTurnArrows().getRoadsConfig();
             }
             case "RIGHT_TURN_ARROWS" -> {
+                intersectionType = type.toUpperCase();
                 roadsLights = IntersectionType.createWithRightTurnArrows().getRoadsConfig();
             }
             default ->
                 throw new IllegalArgumentException("Unknown intersection type: " + type);
         }
-        roads.put(Direction.EAST, new ArrayDeque<>());
-        roads.put(Direction.WEST, new ArrayDeque<>());
-        roads.put(Direction.NORTH, new ArrayDeque<>());
-        roads.put(Direction.SOUTH, new ArrayDeque<>());
+        int randomMax = phases.size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
+        this.currentPhaseIndex = randomIndex;
+        log.info("Selected random starting phase index: {}", randomIndex);
+
+        activateCurrentPhase();
+
+        log.info("Created {} intersection", this.intersectionType);
     }
 
-    public String getIntersectionType(){
-        return intersectiontType;
+
+    public void activateCurrentPhase() {
+        if(phases.isEmpty()){
+            log.warn("Cannot initialize lights: phases list is empty!");
+            return;
+        }
+
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+
+        for (Map.Entry<Direction, RoadLights> entry : roadsLights.entrySet()) {
+            Direction direction = entry.getKey();
+            RoadLights hardwareLights = entry.getValue();
+
+            List<Turn> allowedTurns = currentPhase.getTurns(direction);
+            hardwareLights.applyAllowedTurns(allowedTurns);
+        }
+    }
+
+    public void switchToNextPhase() {
+        currentPhaseIndex++;
+        if (currentPhaseIndex >= phases.size()) {
+            currentPhaseIndex = 0;
+        }
+
+        this.stats.resetPhaseDuration();
+        this.stats.increasePhaseChanges();
+        activateCurrentPhase();
+        log.info("Switched to the next intersection phase: {}", this.currentPhaseIndex);
+    }
+
+    public void switchToPhase(int index) {
+        if (index >= phases.size()) {
+            log.warn("Trying to switch to the non existence phase");
+            return;
+        }
+
+        this.currentPhaseIndex = index;
+
+        this.stats.increasePhaseChanges();
+        this.stats.resetPhaseDuration();
+        activateCurrentPhase();
+        log.info("Switched to the intersection phase: {}", this.currentPhaseIndex);
     }
 
 
@@ -46,153 +107,125 @@ public class Intersection {
             throw new IllegalArgumentException("Unknown direction: " + vehicle.startRoad());
         } 
         queue.add(vehicle);
+        this.stats.increaseVehiclesWaitingNumber();
     }
 
-    public void initRoadsLights() {
-        StartingPhase.InitialSignal startSignal = StartingPhase.generateRandomStart();
-        Direction startDir = startSignal.direction();
-        Turn startTurn = startSignal.turn();
+    // TODO: dla wielu pasów
+    private List<String> findVehiclesForPhase(){
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+        log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
 
-        RoadLights startingRoadsLights = roadsLights.get(startDir);
-        RoadLights finishingRoadsLights = roadsLights.get(startDir.getDestinationDirection(startTurn));
-        
-        if (startingRoadsLights != null) {
-            switch (startTurn) {
-                case STRAIGHT -> {
-                    if (startingRoadsLights.getMainLight() != null) {
-                        startingRoadsLights.getMainLight().changeState(LightState.GREEN);
-                        finishingRoadsLights.getMainLight().changeState(LightState.GREEN);
-                    }
-                }
-                case LEFT -> {
-                    if (startingRoadsLights.getLeftTurnArrow() != null) {
-                        startingRoadsLights.getLeftTurnArrow().changeState(LightState.GREEN);
-                        finishingRoadsLights.getRightTurnArrow().changeState(LightState.GREEN);
-                    } else if (startingRoadsLights.getMainLight() != null) {
-                        // jeśli skrzyżowanie nie ma lewoskrętu, zapalamy główne światło
-                        startingRoadsLights.getMainLight().changeState(LightState.GREEN);
-                        finishingRoadsLights.getMainLight().changeState(LightState.GREEN);
-                    }
-                }
-                case RIGHT -> {
-                    if (startingRoadsLights.getRightTurnArrow() != null) {
-                        startingRoadsLights.getRightTurnArrow().changeState(LightState.GREEN);
-                        finishingRoadsLights.getLeftTurnArrow().changeState(LightState.GREEN);
-                    } else if (startingRoadsLights.getMainLight() != null) {
-                        startingRoadsLights.getMainLight().changeState(LightState.GREEN);
-                        finishingRoadsLights.getMainLight().changeState(LightState.GREEN);
-                    }
-                }
+        List<String> leftVehicles = new ArrayList<>();
+        List<Direction> dirs = currentPhase.getDirections();
+        for(Direction direction : dirs){
+            Queue<Vehicle> queue = roads.get(direction);
+
+            if (queue == null || queue.isEmpty()) {
+                continue;
+            }
+            List<Turn> availableTurns = currentPhase.getTurns(direction);
+            Vehicle vehicle = queue.peek();
+            Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
+            if(intendedTurn != null && availableTurns.contains(intendedTurn)){
+                queue.poll();
+                leftVehicles.add(vehicle.id());
             }
         }
-    }
-
-    private void nextStepForAll(){
-        for(Map.Entry<Direction, RoadLights> entry : roadsLights.entrySet()){
-            entry.getValue().nextStepForAll();
-        }
-    }
-
-
-    public List<String> processStep() {
-        List<String> leftVehicles = new ArrayList<>();
-
-        for(Map.Entry<Direction, RoadLights> entry : roadsLights.entrySet()){
-            RoadLights roadLights = entry.getValue();
-            List<Turn> activeTurns = roadLights.getActiveTurns();
-            pollVehicles(entry.getKey(), activeTurns, leftVehicles);
-        }
-        advanceTrafficLights();
-
         return leftVehicles;
     }
 
-    // zakładamy że istnieje tylko jeden pas
-    // TODO: dla wielu pasów 
-    private void pollVehicles(Direction roadDirection, List<Turn> activeTurns, List<String> leftVehicles) {
-        Queue<Vehicle> queue = roads.get(roadDirection);
-        
-        if (queue == null || queue.isEmpty() || activeTurns == null || activeTurns.isEmpty()) {
-            return; 
-        }
+    private int countPotentialVehiclesForPhase(IntersectionPhase phase) {
+        int potentialCount = 0;
 
-        Vehicle vehicle = queue.peek(); 
-        Turn intendedTurn = calculateTurn(roadDirection, vehicle.endRoad());
+        for (Direction direction : phase.getDirections()) {
+            Queue<Vehicle> queue = roads.get(direction);
+            if (queue == null || queue.isEmpty()) continue;
 
-        if (activeTurns.contains(intendedTurn)) {
-            queue.poll(); 
-            leftVehicles.add(vehicle.id());
-        }
-    }
+            Vehicle firstCar = queue.peek();
+            Turn intendedTurn = direction.calculateTurn(firstCar.endRoad());
+            List<Turn> allowedTurns = phase.getTurns(direction);
 
-    // TODO: zliczanie faz
-    private void advanceTrafficLights() {
-        stepsNumber++;
-        
-        int timeInCurrentPhase = stepsNumber - lastPhaseChangeStep;
-        boolean shouldSwitchEarly = false;
-        
-        boolean nsGreen = isMainLightGreen(Direction.NORTH) || isMainLightGreen(Direction.SOUTH);
-        boolean ewGreen = isMainLightGreen(Direction.EAST) || isMainLightGreen(Direction.WEST);
-
-        if (nsGreen && timeInCurrentPhase >= 2) { 
-            if (isRoadEmpty(Direction.NORTH) && isRoadEmpty(Direction.SOUTH) && 
-               (!isRoadEmpty(Direction.EAST) || !isRoadEmpty(Direction.WEST))) {
-                shouldSwitchEarly = true;
-            }
-        } else if (ewGreen && timeInCurrentPhase >= 2) {
-            if (isRoadEmpty(Direction.EAST) && isRoadEmpty(Direction.WEST) && 
-               (!isRoadEmpty(Direction.NORTH) || !isRoadEmpty(Direction.SOUTH))) {
-                shouldSwitchEarly = true;
+            if (allowedTurns != null && allowedTurns.contains(intendedTurn)) {
+                potentialCount++;
             }
         }
-
-        if (shouldSwitchEarly) {
-            forceNextPhaseForActiveLights();
-            lastPhaseChangeStep = stepsNumber;
-            
-        } else {
-            nextStepForAll(); 
-        }
+        return potentialCount;
     }
 
-    private boolean isMainLightGreen(Direction direction) {
-        RoadLights lights = roadsLights.get(direction);
-        if (lights != null && lights.getMainLight() != null) {
-            return lights.getMainLight().getState() == LightState.GREEN;
+    private boolean optimizeCurrentPhase() {
+        log.info("Optimizing vehicles flow...");
+
+        int maxVehiclesToLeave = 0;
+        IntersectionPhase bestPhase = null;
+        int newPhaseIndex = currentPhaseIndex + 1;
+
+        while(newPhaseIndex % phases.size() != currentPhaseIndex){
+
+            IntersectionPhase evaluatedPhase = phases.get(newPhaseIndex % phases.size());
+            int potentialVehicles = countPotentialVehiclesForPhase(evaluatedPhase);
+
+            if (potentialVehicles > maxVehiclesToLeave) {
+                maxVehiclesToLeave = potentialVehicles;
+                bestPhase = evaluatedPhase;
+            }
+            newPhaseIndex++;
+        }
+
+        if (phases.indexOf(bestPhase) != currentPhaseIndex && maxVehiclesToLeave > 0) {
+            switchToPhase(phases.indexOf(bestPhase));
+            return true;
         }
         return false;
     }
 
-    private void forceNextPhaseForActiveLights() {
-        for (RoadLights lights : roadsLights.values()) {
-            if (lights != null && lights.getMainLight() != null) {
-                // Jeśli światło jest zielone, wymuś zmianę
-                if (lights.getMainLight().getState() == LightState.GREEN) {
-                    lights.getMainLight().nextPhase();
-                }
+   /* private List<String> optimizeCurrentPhase(){
+        log.info("Optimizing vehicles flow");
+        List<String> leftVehicles = new ArrayList<>();
+        IntersectionPhase bestPhase = null;
+
+        int newPhaseIndex = currentPhaseIndex + 1;
+        while(newPhaseIndex % phases.size() != currentPhaseIndex){
+            IntersectionPhase newPhase = phases.get(newPhaseIndex % phases.size());
+            List<String> newVehicles = findVehiclesForPhase(newPhase);
+            if(newVehicles.size() > leftVehicles.size()){
+                leftVehicles = newVehicles;
+                bestPhase = newPhase;
             }
+            newPhaseIndex++;
         }
+
+        if(bestPhase != null && !leftVehicles.isEmpty()){
+            switchToPhase(phases.indexOf(bestPhase));
+        }
+        return leftVehicles;
+    }*/
+
+
+    public List<String> processStep() {
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+        if(this.stats.getPhaseDuration() == currentPhase.getMaxDuration()){
+            switchToNextPhase();
+        }
+
+        List<String> leftVehicles = findVehiclesForPhase();
+
+        if(leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0){
+            boolean isOptimized = optimizeCurrentPhase();
+            if(isOptimized){
+                leftVehicles = findVehiclesForPhase();
+            }
+        }else{
+            this.stats.increaseStepsWithoutChange();
+        }
+
+        this.stats.increaseStepsNumber();
+        this.stats.addVehiclesLeft(leftVehicles.size());
+        this.stats.removeWaitingVehicles(leftVehicles.size());
+        return leftVehicles;
     }
 
 
      private boolean isRoadEmpty(Direction roadDirection) {
         return roads.get(roadDirection).isEmpty();
     }
-
-    private Turn calculateTurn(Direction start, Direction end) {
-        // TODO: adding turning around
-        if (start == end) {
-            throw new IllegalArgumentException("Start and end direction cannot be the same!");
-        }
-        
-        return switch (start) {
-            case NORTH -> end == Direction.SOUTH ? Turn.STRAIGHT : (end == Direction.EAST ? Turn.LEFT : Turn.RIGHT);
-            case SOUTH -> end == Direction.NORTH ? Turn.STRAIGHT : (end == Direction.WEST ? Turn.LEFT : Turn.RIGHT);
-            case EAST  -> end == Direction.WEST  ? Turn.STRAIGHT : (end == Direction.SOUTH ? Turn.LEFT : Turn.RIGHT);
-            case WEST  -> end == Direction.EAST  ? Turn.STRAIGHT : (end == Direction.NORTH ? Turn.LEFT : Turn.RIGHT);
-        };
-    }
-
-
 }

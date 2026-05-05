@@ -4,7 +4,7 @@ import com.traffic_lights.config.TimeConfig;
 
 import lombok.AllArgsConstructor;
 
-// @AllArgsConstructor
+@AllArgsConstructor
 public class LightActivity {
     
     private LightState state;

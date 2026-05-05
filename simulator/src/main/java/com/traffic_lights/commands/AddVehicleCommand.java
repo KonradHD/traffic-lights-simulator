@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.traffic_lights.components.Direction;
 import com.traffic_lights.components.Intersection;
-import com.traffic_lights.components.Vehicle;
+import com.traffic_lights.dto.Vehicle;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public record AddVehicleCommand(
 
     String vehicleId, 
@@ -17,6 +19,7 @@ public record AddVehicleCommand(
 
     @Override
     public List<String> execute(Intersection intersection) {
+        log.info("Adding vehicle - {} to queue", vehicleId);
         Vehicle vehicle = new Vehicle(vehicleId, startRoad, endRoad);
         intersection.addVehicleToQueue(vehicle);
         return Collections.emptyList();
