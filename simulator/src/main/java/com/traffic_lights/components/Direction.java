@@ -1,9 +1,19 @@
 package com.traffic_lights.components;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum Direction {
+
+    @JsonProperty("south")
     SOUTH,
+
+    @JsonProperty("west")
     WEST,
+
+    @JsonProperty("north")
     NORTH,
+
+    @JsonProperty("east")
     EAST;
 
     public Direction getOpposite() {
