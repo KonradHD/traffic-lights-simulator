@@ -44,6 +44,7 @@ public class Intersection {
             }
             case "RIGHT_TURN_ARROWS" -> {
                 intersectionType = type.toUpperCase();
+                phases = PhasesBuilder.createRightTurnArrowsPhases();
                 roadsLights = IntersectionType.createWithRightTurnArrows().getRoadsConfig();
             }
             case "SPLIT_PHASES" -> {
@@ -118,18 +119,30 @@ public class Intersection {
         this.stats.increaseVehiclesWaitingNumber();
     }
 
-    private boolean isPrioritized(Direction endDirection, IntersectionPhase phase) {
-        Direction oppositeDirection = endDirection.getOpposite();
-        Queue<Vehicle> queue = roads.get(oppositeDirection);
+    private boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
+        Direction startingDirection;
+        if(rightArrow){
+            startingDirection = endDirection.getLeftDirection();
+        }else{
+            startingDirection = endDirection.getOpposite();
+        }
+
+        Queue<Vehicle> queue = roads.get(startingDirection);
         if (queue == null || queue.isEmpty()) {
             return true;
         }
 
         Vehicle vehicle = queue.peek();
-        Turn intendedTurn = oppositeDirection.calculateTurn(vehicle.endRoad());
-        List<Turn> availableTurns = phase.getTurns(oppositeDirection);
-        return !(availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
+        Turn intendedTurn = startingDirection.calculateTurn(vehicle.endRoad());
+        List<Turn> availableTurns = phase.getTurns(startingDirection);
+
+        if(rightArrow){
+            return !(availableTurns != null && availableTurns.contains(intendedTurn) && intendedTurn == Turn.STRAIGHT);
+        }else{
+            return !(availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
+        }
     }
+
 
     // TODO: dla wielu pasów
     private List<String> findVehiclesForCurrentPhase(){
@@ -149,8 +162,13 @@ public class Intersection {
             Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
             if(intendedTurn != null && availableTurns.contains(intendedTurn)){
 
-                if(intendedTurn == Turn.LEFT && !isPrioritized(direction, currentPhase)){
+                if(intendedTurn == Turn.LEFT && !isPrioritized(direction, currentPhase, false)){
                     log.info("{} is turning left and is not prioritized", vehicle.id());
+                    continue;
+                }
+
+                if(intendedTurn == Turn.RIGHT && !isPrioritized(direction, currentPhase, true)){
+                    log.info("{} is turning right with conditional arrow and is not prioritized", vehicle.id());
                     continue;
                 }
 

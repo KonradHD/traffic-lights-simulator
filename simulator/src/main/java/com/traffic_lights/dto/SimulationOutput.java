@@ -9,10 +9,6 @@ public record SimulationOutput(
     List<VehiclesDTO> stepStatuses
 ) {
 
-    public void addVehicles(VehiclesDTO vehicles){
-        stepStatuses.add(vehicles);
-    }
-
     public void addVehicles(List<String> vehicles){
         VehiclesDTO dto = createVehiclesDTO(vehicles);
         stepStatuses.add(dto);

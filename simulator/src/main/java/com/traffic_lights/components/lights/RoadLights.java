@@ -21,18 +21,6 @@ public class RoadLights {
     private LightActivity rightTurnArrow; 
 
 
-    public LightActivity getMainLight(){
-        return mainLight;
-    }
-
-    public LightActivity getLeftTurnArrow(){
-        return leftTurnArrow;
-    }
-
-    public LightActivity getRightTurnArrow(){
-        return rightTurnArrow;
-    }
-
     public void nextStepForAll(){
         if(mainLight != null){
             mainLight.nextStep();
@@ -52,7 +40,7 @@ public class RoadLights {
             allowedTurns = new ArrayList<>();
         }
 
-        // 1. Główne światło (zwykle odpowiada za jazdę PROSTO, a czasem w PRAWO)
+        // Główne światło (zwykle odpowiada za jazdę PROSTO, a czasem w PRAWO)
         if (mainLight != null) {
             if (allowedTurns.contains(Turn.STRAIGHT) || (allowedTurns.contains(Turn.RIGHT) && rightTurnArrow == null)) {
                 mainLight.changeState(LightState.GREEN);
@@ -61,7 +49,7 @@ public class RoadLights {
             }
         }
 
-        // 2. Strzałka w lewo
+        // Strzałka w lewo
         if (leftTurnArrow != null) {
             if (allowedTurns.contains(Turn.LEFT)) {
                 leftTurnArrow.changeState(LightState.GREEN);
@@ -70,7 +58,7 @@ public class RoadLights {
             }
         }
 
-        // 3. Strzałka w prawo
+        // Strzałka w prawo
         if (rightTurnArrow != null) {
             if (allowedTurns.contains(Turn.RIGHT)) {
                 rightTurnArrow.changeState(LightState.GREEN);

@@ -20,9 +20,9 @@
 
       "vehicleId": "vehicle2",
 
-      "startRoad": "north",
+      "startRoad": "east",
 
-      "endRoad": "south"
+      "endRoad": "north"
 
     },
 

@@ -17,11 +17,10 @@ import lombok.Getter;
 
 
  @Getter
-// @AllArgsConstructor
 public class IntersectionType {
 
-    private String typeName;
-    private Map<Direction, RoadLights> roadsConfig;
+    private final String typeName;
+    private final Map<Direction, RoadLights> roadsConfig;
 
 
     public IntersectionType(String typeName, Map<Direction, RoadLights> roadsConfig){

@@ -9,20 +9,18 @@ public enum LightState {
     NONFUNCTIONAL;
 
     public LightState nextState(){
-        if(null != this){
-            switch (this) {
-                case NONFUNCTIONAL -> throw undeclaredNextStateException(NONFUNCTIONAL.toString());
-                case RED -> {
-                    return GREEN;
-                }
-                case GREEN -> {
-                    return ORANGE;
-                }
-                case ORANGE -> {
-                    return RED;
-                }
-                default -> {
-                }
+        switch (this) {
+            case NONFUNCTIONAL -> throw undeclaredNextStateException(NONFUNCTIONAL.toString());
+            case RED -> {
+                return GREEN;
+            }
+            case GREEN -> {
+                return ORANGE;
+            }
+            case ORANGE -> {
+                return RED;
+            }
+            default -> {
             }
         }
         throw new IllegalStateException("Unknown light state: " + this);

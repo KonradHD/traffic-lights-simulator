@@ -95,4 +95,40 @@ public class PhasesBuilder {
         ));
         return phases;
     }
+
+    public static List<IntersectionPhase> createRightTurnArrowsPhases() {
+        List<IntersectionPhase> phases = new ArrayList<>();
+        List<Turn> rightStraightTurn = List.of(Turn.STRAIGHT, Turn.RIGHT);
+        List<Turn> conditionallyRightTurn = List.of(Turn.RIGHT);
+        List<Turn> leftTurns = List.of(Turn.LEFT);
+
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST),
+                        List.of(rightStraightTurn, rightStraightTurn, conditionallyRightTurn, conditionallyRightTurn),
+                        timeConfig.getMainLightPhaseTime()
+                )
+        );
+        new IntersectionPhase(
+                List.of(Direction.NORTH, Direction.SOUTH),
+                List.of(leftTurns, leftTurns),
+                timeConfig.getLeftTurningPhaseTime()
+        );
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH),
+                        List.of(rightStraightTurn, rightStraightTurn, conditionallyRightTurn, conditionallyRightTurn),
+                        timeConfig.getMainLightPhaseTime()
+                )
+        );
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.WEST, Direction.EAST),
+                        List.of(leftTurns, leftTurns),
+                        timeConfig.getLeftTurningPhaseTime()
+                )
+        );
+        return phases;
+    }
+
 }

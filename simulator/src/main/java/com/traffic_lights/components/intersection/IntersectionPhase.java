@@ -13,11 +13,8 @@ import java.util.Map;
 @Data
 public class IntersectionPhase {
     private int maxDuration;
-    private final Map<Direction, List<Turn>> paths = new HashMap<Direction, List<Turn>>();
+    private final Map<Direction, List<Turn>> paths = new HashMap<>();
 
-    public void addPath(Direction direction, List<Turn> turns) {
-        paths.put(direction, turns);
-    }
 
     public IntersectionPhase(List<Direction> directions, List<List<Turn>> turns, int maxDuration) {
         if(directions.size() != turns.size()) {
