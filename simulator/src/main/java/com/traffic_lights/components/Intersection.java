@@ -110,8 +110,21 @@ public class Intersection {
         this.stats.increaseVehiclesWaitingNumber();
     }
 
+    private boolean isPrioritized(Direction endDirection, IntersectionPhase phase) {
+        Direction oppositeDirection = endDirection.getOpposite();
+        Queue<Vehicle> queue = roads.get(oppositeDirection);
+        if (queue == null || queue.isEmpty()) {
+            return true;
+        }
+
+        Vehicle vehicle = queue.peek();
+        Turn intendedTurn = oppositeDirection.calculateTurn(vehicle.endRoad());
+        List<Turn> availableTurns = phase.getTurns(oppositeDirection);
+        return !(availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
+    }
+
     // TODO: dla wielu pasów
-    private List<String> findVehiclesForPhase(){
+    private List<String> findVehiclesForCurrentPhase(){
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
 
@@ -127,6 +140,12 @@ public class Intersection {
             Vehicle vehicle = queue.peek();
             Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
             if(intendedTurn != null && availableTurns.contains(intendedTurn)){
+
+                if(intendedTurn == Turn.LEFT && !isPrioritized(direction, currentPhase)){
+                    log.info("{} is turning left and is not prioritized", vehicle.id());
+                    continue;
+                }
+
                 queue.poll();
                 leftVehicles.add(vehicle.id());
             }
@@ -178,28 +197,6 @@ public class Intersection {
         return false;
     }
 
-   /* private List<String> optimizeCurrentPhase(){
-        log.info("Optimizing vehicles flow");
-        List<String> leftVehicles = new ArrayList<>();
-        IntersectionPhase bestPhase = null;
-
-        int newPhaseIndex = currentPhaseIndex + 1;
-        while(newPhaseIndex % phases.size() != currentPhaseIndex){
-            IntersectionPhase newPhase = phases.get(newPhaseIndex % phases.size());
-            List<String> newVehicles = findVehiclesForPhase(newPhase);
-            if(newVehicles.size() > leftVehicles.size()){
-                leftVehicles = newVehicles;
-                bestPhase = newPhase;
-            }
-            newPhaseIndex++;
-        }
-
-        if(bestPhase != null && !leftVehicles.isEmpty()){
-            switchToPhase(phases.indexOf(bestPhase));
-        }
-        return leftVehicles;
-    }*/
-
 
     public List<String> processStep() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
@@ -207,12 +204,12 @@ public class Intersection {
             switchToNextPhase();
         }
 
-        List<String> leftVehicles = findVehiclesForPhase();
+        List<String> leftVehicles = findVehiclesForCurrentPhase();
 
         if(leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0){
             boolean isOptimized = optimizeCurrentPhase();
             if(isOptimized){
-                leftVehicles = findVehiclesForPhase();
+                leftVehicles = findVehiclesForCurrentPhase();
             }
         }else{
             this.stats.increaseStepsWithoutChange();

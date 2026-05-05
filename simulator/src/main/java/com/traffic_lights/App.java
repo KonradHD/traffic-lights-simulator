@@ -17,7 +17,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        String fileName = "example1.json";
+        String fileName = "example3.json";
         try {
 
             SimulationInput input = InputParser.readFile(fileName);
