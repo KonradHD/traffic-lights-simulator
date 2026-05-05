@@ -131,4 +131,31 @@ public class PhasesBuilder {
         return phases;
     }
 
+    public static List<IntersectionPhase> createMultiLaneStandardPhases() {
+        List<IntersectionPhase> phases = new ArrayList<>();
+        List<Turn> straightRight = List.of(Turn.STRAIGHT, Turn.RIGHT);
+        List<Turn> leftOnly = List.of(Turn.LEFT);
+        List<Turn> allTurns = List.of(Turn.STRAIGHT, Turn.LEFT, Turn.RIGHT);
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.NORTH, Direction.SOUTH),
+                List.of(straightRight, straightRight),
+                timeConfig.getMainLightPhaseTime()
+        ));
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.NORTH, Direction.SOUTH),
+                List.of(leftOnly, leftOnly),
+                timeConfig.getLeftTurningPhaseTime()
+        ));
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.EAST, Direction.WEST),
+                List.of(allTurns, allTurns),
+                timeConfig.getMainLightPhaseTime()
+        ));
+
+        return phases;
+    }
+
 }

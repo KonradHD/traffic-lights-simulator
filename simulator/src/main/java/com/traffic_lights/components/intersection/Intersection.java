@@ -10,63 +10,20 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Intersection {
+public abstract class Intersection {
 
     @Getter
-    private final String intersectionType;
+    protected String intersectionType;
 
     @Getter
-    private final IntersectionStats stats;
+    protected IntersectionStats stats;
 
-    private final Map<Direction, Queue<Vehicle>> roads = new HashMap<>();
-    private final Map<Direction, RoadLights> roadsLights;
-    private List<IntersectionPhase> phases;
-    private int currentPhaseIndex;
-
-    public Intersection(String type) {
-
-        roads.put(Direction.EAST, new ArrayDeque<>());
-        roads.put(Direction.WEST, new ArrayDeque<>());
-        roads.put(Direction.NORTH, new ArrayDeque<>());
-        roads.put(Direction.SOUTH, new ArrayDeque<>());
-        this.stats = new IntersectionStats(0, 0, 0, 0, 0);
-
-        switch (type.toUpperCase()) {
-            case "STANDARD" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createStandardPhases();
-                roadsLights = IntersectionType.createStandard().getRoadsConfig();
-            }
-            case "LEFT_TURN_ARROWS" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createLeftArrowsPhases();
-                roadsLights = IntersectionType.createWithLeftTurnArrows().getRoadsConfig();
-            }
-            case "RIGHT_TURN_ARROWS" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createRightTurnArrowsPhases();
-                roadsLights = IntersectionType.createWithRightTurnArrows().getRoadsConfig();
-            }
-            case "SPLIT_PHASES" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createSplitPhases();
-                roadsLights = IntersectionType.createSplitPhases().getRoadsConfig();
-            }
-            default ->
-                throw new IllegalArgumentException("Unknown intersection type: " + type);
-        }
-        int randomMax = phases.size();
-        int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
-        this.currentPhaseIndex = randomIndex;
-        log.info("Selected random starting phase index: {}", randomIndex);
-
-        activateCurrentPhase();
-
-        log.info("Created {} intersection", this.intersectionType);
-    }
+    protected Map<Direction, RoadLights> roadsLights;
+    protected List<IntersectionPhase> phases;
+    protected int currentPhaseIndex;
 
 
-    public void activateCurrentPhase() {
+    protected void activateCurrentPhase() {
         if(phases.isEmpty()){
             log.warn("Cannot initialize lights: phases list is empty!");
             return;
@@ -83,7 +40,7 @@ public class Intersection {
         }
     }
 
-    public void switchToNextPhase() {
+    protected void switchToNextPhase() {
         currentPhaseIndex++;
         if (currentPhaseIndex >= phases.size()) {
             currentPhaseIndex = 0;
@@ -95,7 +52,7 @@ public class Intersection {
         log.info("Switched to the next intersection phase: {}", this.currentPhaseIndex);
     }
 
-    public void switchToPhase(int index) {
+    protected void switchToPhase(int index) {
         if (index >= phases.size()) {
             log.warn("Trying to switch to the non existence phase");
             return;
@@ -109,95 +66,15 @@ public class Intersection {
         log.info("Switched to the intersection phase: {}", this.currentPhaseIndex);
     }
 
+    public abstract void addVehicleToQueue(Vehicle vehicle);
 
-    public void addVehicleToQueue(Vehicle vehicle) {
-        Queue<Vehicle> queue = roads.get(vehicle.startRoad());
-        if (queue == null) {
-            throw new IllegalArgumentException("Unknown direction: " + vehicle.startRoad());
-        } 
-        queue.add(vehicle);
-        this.stats.increaseVehiclesWaitingNumber();
-    }
+    protected abstract boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow);
 
-    private boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
-        Direction startingDirection;
-        if(rightArrow){
-            startingDirection = endDirection.getLeftDirection();
-        }else{
-            startingDirection = endDirection.getOpposite();
-        }
+    protected abstract List<String> findVehiclesForCurrentPhase();
 
-        Queue<Vehicle> queue = roads.get(startingDirection);
-        if (queue == null || queue.isEmpty()) {
-            return true;
-        }
+    protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
 
-        Vehicle vehicle = queue.peek();
-        Turn intendedTurn = startingDirection.calculateTurn(vehicle.endRoad());
-        List<Turn> availableTurns = phase.getTurns(startingDirection);
-
-        if(rightArrow){
-            return !(availableTurns != null && availableTurns.contains(intendedTurn) && intendedTurn == Turn.STRAIGHT);
-        }else{
-            return !(availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
-        }
-    }
-
-
-    // TODO: dla wielu pasów
-    private List<String> findVehiclesForCurrentPhase(){
-        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
-        log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
-
-        List<String> leftVehicles = new ArrayList<>();
-        List<Direction> dirs = currentPhase.getDirections();
-        for(Direction direction : dirs){
-            Queue<Vehicle> queue = roads.get(direction);
-
-            if (queue == null || queue.isEmpty()) {
-                continue;
-            }
-            List<Turn> availableTurns = currentPhase.getTurns(direction);
-            Vehicle vehicle = queue.peek();
-            Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
-            if(intendedTurn != null && availableTurns.contains(intendedTurn)){
-
-                if(intendedTurn == Turn.LEFT && !isPrioritized(direction, currentPhase, false)){
-                    log.info("{} is turning left and is not prioritized", vehicle.id());
-                    continue;
-                }
-
-                if(intendedTurn == Turn.RIGHT && !isPrioritized(direction, currentPhase, true)){
-                    log.info("{} is turning right with conditional arrow and is not prioritized", vehicle.id());
-                    continue;
-                }
-
-                queue.poll();
-                leftVehicles.add(vehicle.id());
-            }
-        }
-        return leftVehicles;
-    }
-
-    private int countPotentialVehiclesForPhase(IntersectionPhase phase) {
-        int potentialCount = 0;
-
-        for (Direction direction : phase.getDirections()) {
-            Queue<Vehicle> queue = roads.get(direction);
-            if (queue == null || queue.isEmpty()) continue;
-
-            Vehicle firstCar = queue.peek();
-            Turn intendedTurn = direction.calculateTurn(firstCar.endRoad());
-            List<Turn> allowedTurns = phase.getTurns(direction);
-
-            if (allowedTurns != null && allowedTurns.contains(intendedTurn)) {
-                potentialCount++;
-            }
-        }
-        return potentialCount;
-    }
-
-    private boolean optimizeCurrentPhase() {
+    protected boolean optimizeCurrentPhase() {
         log.info("Optimizing vehicles flow...");
 
         int maxVehiclesToLeave = 0;
@@ -247,8 +124,4 @@ public class Intersection {
         return leftVehicles;
     }
 
-
-     private boolean isRoadEmpty(Direction roadDirection) {
-        return roads.get(roadDirection).isEmpty();
-    }
 }

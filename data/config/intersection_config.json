@@ -1,0 +1,35 @@
+{
+  "configs": {
+    "STANDARD": {
+      "NORTH": [
+        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      ],
+      "SOUTH": [
+        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      ],
+      "EAST": [
+        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      ],
+      "WEST": [
+        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      ]
+    },
+    "MULTI_LANES_STANDARD": {
+      "NORTH": [
+        { "allowedTurns": ["LEFT"] },
+        { "allowedTurns": ["STRAIGHT"] },
+        { "allowedTurns": ["RIGHT"] }
+      ],
+      "SOUTH": [
+        { "allowedTurns": ["LEFT"] },
+        { "allowedTurns": ["STRAIGHT", "RIGHT"] }
+      ],
+      "EAST": [
+        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      ],
+      "WEST": [
+        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      ]
+    }
+  }
+}
