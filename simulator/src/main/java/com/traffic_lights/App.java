@@ -17,13 +17,13 @@ public class App
 {
     public static void main( String[] args )
     {
-        String fileName = "example3.json";
+        String fileName = "example2.json";
         try {
 
             SimulationInput input = InputParser.readFile(fileName);
             IntersectionSimulator simulator = new IntersectionSimulator();
     
-            SimulationOutput output = simulator.runSimulation(input.commands(), "standard");
+            SimulationOutput output = simulator.runSimulation(input.commands(), "SPLIT_PHASES");
     
             OutputParser.saveOutput(fileName, output);
             

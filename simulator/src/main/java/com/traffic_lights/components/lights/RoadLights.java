@@ -1,5 +1,6 @@
-package com.traffic_lights.components;
+package com.traffic_lights.components.lights;
 
+import com.traffic_lights.components.Turn;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class RoadLights {
     // light for driving straight or right
-    private LightActivity mainLight; 
+    private LightActivity mainLight;
     
     // driving left
     private LightActivity leftTurnArrow; 

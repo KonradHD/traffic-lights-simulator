@@ -1,5 +1,6 @@
 package com.traffic_lights.components;
 
+import com.traffic_lights.components.intersection.IntersectionPhase;
 import com.traffic_lights.config.PhaseTimeConfig;
 
 import java.util.ArrayList;
@@ -26,6 +27,72 @@ public class PhasesBuilder {
                         timeConfig.getMainLightPhaseTime()
                 )
         );
+        return phases;
+    }
+
+    public static List<IntersectionPhase> createLeftArrowsPhases(){
+        List<IntersectionPhase> phases = new ArrayList<>();
+        List<Turn> mainLightTurns = List.of(Turn.STRAIGHT, Turn.RIGHT);
+        List<Turn> leftTurns = List.of(Turn.LEFT);
+
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.NORTH, Direction.SOUTH),
+                        List.of(mainLightTurns, mainLightTurns),
+                        timeConfig.getMainLightPhaseTime()
+                )
+        );
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.NORTH, Direction.SOUTH),
+                        List.of(leftTurns, leftTurns),
+                        timeConfig.getLeftTurningPhaseTime()
+                )
+        );
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.WEST, Direction.EAST),
+                        List.of(mainLightTurns, mainLightTurns),
+                        timeConfig.getMainLightPhaseTime()
+                )
+        );
+        phases.add(
+                new IntersectionPhase(
+                        List.of(Direction.WEST, Direction.EAST),
+                        List.of(leftTurns, leftTurns),
+                        timeConfig.getLeftTurningPhaseTime()
+                )
+        );
+        return phases;
+    }
+
+    public static List<IntersectionPhase> createSplitPhases() {
+        List<IntersectionPhase> phases = new ArrayList<>();
+        List<Turn> allTurns = List.of(Turn.STRAIGHT, Turn.LEFT, Turn.RIGHT);
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.NORTH),
+                List.of(allTurns),
+                timeConfig.getSplitPhaseTime()
+        ));
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.SOUTH),
+                List.of(allTurns),
+                timeConfig.getSplitPhaseTime()
+        ));
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.EAST),
+                List.of(allTurns),
+                timeConfig.getSplitPhaseTime()
+        ));
+
+        phases.add(new IntersectionPhase(
+                List.of(Direction.WEST),
+                List.of(allTurns),
+                timeConfig.getSplitPhaseTime()
+        ));
         return phases;
     }
 }

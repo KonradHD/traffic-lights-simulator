@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.traffic_lights.components.Direction;
-import com.traffic_lights.components.Intersection;
+import com.traffic_lights.components.intersection.Intersection;
 import com.traffic_lights.dto.Vehicle;
 import lombok.extern.slf4j.Slf4j;
 

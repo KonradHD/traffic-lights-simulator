@@ -1,4 +1,4 @@
-package com.traffic_lights.components;
+package com.traffic_lights.components.intersection;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

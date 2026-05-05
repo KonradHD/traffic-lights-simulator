@@ -6,4 +6,5 @@ import lombok.Getter;
 public class PhaseTimeConfig {
     private final int mainLightPhaseTime = 5;
     private final int leftTurningPhaseTime = 3;
+    private final int splitPhaseTime = 4;
 }

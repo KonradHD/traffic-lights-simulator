@@ -1,14 +1,18 @@
-package com.traffic_lights.components;
+package com.traffic_lights.components.intersection;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.traffic_lights.components.Direction.*;
-import static com.traffic_lights.components.LightState.*;
+import static com.traffic_lights.components.lights.LightState.*;
+
+import com.traffic_lights.components.Direction;
+import com.traffic_lights.components.lights.LightActivity;
+import com.traffic_lights.components.lights.LightState;
+import com.traffic_lights.components.lights.RoadLights;
 import com.traffic_lights.config.TimeConfig;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
@@ -62,5 +66,10 @@ public class IntersectionType {
             WEST,  new RoadLights(new LightActivity(RED, new TimeConfig()), null, new LightActivity(RED, new TimeConfig()))
         );
         return new IntersectionType("RIGHT_TURN_ARROWS", rightTurnRoads);
+    }
+
+    public static IntersectionType createSplitPhases(){
+        IntersectionType standard = createStandard();
+        return new IntersectionType("SPLIT_PHASES", standard.getRoadsConfig());
     }
 }

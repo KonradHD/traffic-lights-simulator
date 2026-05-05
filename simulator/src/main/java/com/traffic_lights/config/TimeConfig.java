@@ -3,7 +3,7 @@ package com.traffic_lights.config;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.traffic_lights.components.LightState;
+import com.traffic_lights.components.lights.LightState;
 
 
 public class TimeConfig {

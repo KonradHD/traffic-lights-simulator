@@ -10,7 +10,7 @@
 
       "startRoad": "south",
 
-      "endRoad": "east"
+      "endRoad": "north"
 
     },
 
@@ -26,17 +26,6 @@
 
     },
 
-    {
-
-      "type": "addVehicle",
-
-      "vehicleId": "vehicle2",
-
-      "startRoad": "north",
-
-      "endRoad": "east"
-
-    },
 
     {
 
@@ -73,6 +62,18 @@
       "type": "addVehicle",
 
       "vehicleId": "vehicle4",
+
+      "startRoad": "west",
+
+      "endRoad": "north"
+
+    },
+
+    {
+
+      "type": "addVehicle",
+
+      "vehicleId": "vehicle5",
 
       "startRoad": "west",
 

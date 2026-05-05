@@ -1,8 +1,10 @@
-package com.traffic_lights.components;
+package com.traffic_lights.components.intersection;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.traffic_lights.components.*;
+import com.traffic_lights.components.lights.RoadLights;
 import com.traffic_lights.dto.Vehicle;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +39,17 @@ public class Intersection {
             }
             case "LEFT_TURN_ARROWS" -> {
                 intersectionType = type.toUpperCase();
+                phases = PhasesBuilder.createLeftArrowsPhases();
                 roadsLights = IntersectionType.createWithLeftTurnArrows().getRoadsConfig();
             }
             case "RIGHT_TURN_ARROWS" -> {
                 intersectionType = type.toUpperCase();
                 roadsLights = IntersectionType.createWithRightTurnArrows().getRoadsConfig();
+            }
+            case "SPLIT_PHASES" -> {
+                intersectionType = type.toUpperCase();
+                phases = PhasesBuilder.createSplitPhases();
+                roadsLights = IntersectionType.createSplitPhases().getRoadsConfig();
             }
             default ->
                 throw new IllegalArgumentException("Unknown intersection type: " + type);
@@ -120,7 +128,7 @@ public class Intersection {
         Vehicle vehicle = queue.peek();
         Turn intendedTurn = oppositeDirection.calculateTurn(vehicle.endRoad());
         List<Turn> availableTurns = phase.getTurns(oppositeDirection);
-        return !(availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
+        return !(availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
     }
 
     // TODO: dla wielu pasów
