@@ -2,7 +2,6 @@ package com.traffic_lights.components.intersection;
 
 import com.traffic_lights.components.Direction;
 import com.traffic_lights.components.Lane;
-import com.traffic_lights.components.PhasesBuilder;
 import com.traffic_lights.components.Turn;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
@@ -11,7 +10,6 @@ import com.traffic_lights.dto.intersection.LaneDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class MultiLaneIntersection extends Intersection {
@@ -20,48 +18,13 @@ public class MultiLaneIntersection extends Intersection {
 
 
     public MultiLaneIntersection(String type) {
-        stats = new IntersectionStats(0, 0, 0, 0, 0);
-
-        switch (type.toUpperCase()) {
-            case "MULTI_LANES_STANDARD" -> {
-                intersectionType = type.toUpperCase();
-                initRoads(intersectionType);
-                phases = PhasesBuilder.createMultiLaneStandardPhases();
-                roadsLights = IntersectionType.createStandard().getRoadsConfig();
-            }
-            case "MULTI_LANES_LEFT_TURN_ARROWS" -> {
-                intersectionType = type.toUpperCase();
-                initRoads(intersectionType);
-                phases = PhasesBuilder.createLeftArrowsPhases();
-                roadsLights = IntersectionType.createWithLeftTurnArrows().getRoadsConfig();
-            }
-            case "MULTI_LANES_RIGHT_TURN_ARROWS" -> {
-                intersectionType = type.toUpperCase();
-                initRoads(intersectionType);
-                phases = PhasesBuilder.createRightTurnArrowsPhases();
-                roadsLights = IntersectionType.createWithRightTurnArrows().getRoadsConfig();
-            }
-            case "MULTI_LANES_SPLIT_PHASES" -> {
-                intersectionType = type.toUpperCase();
-                initRoads(intersectionType);
-                phases = PhasesBuilder.createSplitPhases();
-                roadsLights = IntersectionType.createSplitPhases().getRoadsConfig();
-            }
-            default ->
-                    throw new IllegalArgumentException("Unknown intersection type: " + type);
-        }
-        int randomMax = phases.size();
-        int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
-        this.currentPhaseIndex = randomIndex;
-        log.info("Selected random starting phase index: {}", randomIndex);
-
-        activateCurrentPhase();
+        super(type);
+        initLanes(type);
 
         log.info("Created {} intersection", this.intersectionType);
-
     }
 
-    private void initRoads(String type){
+    private void initLanes(String type){
         IntersectionConfig.loadConfig();
         IntersectionLayout layoutTemplate = IntersectionConfig.getLayoutForType(type.toUpperCase());
 

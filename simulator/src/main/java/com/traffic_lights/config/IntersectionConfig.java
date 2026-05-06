@@ -19,7 +19,7 @@ public class IntersectionConfig {
     public static void loadConfig() {
         try {
             configuration = mapper.readValue(new File(path), RoadsConfiguration.class);
-            log.info("Successfully loaded road configurations for {} types.", configuration.configs().size());
+            log.info("Successfully loaded road configurations and light phases for {} types.", configuration.configs().size());
         } catch (Exception e) {
             log.error("Failed to load roads configuration!", e);
             throw new RuntimeException("Cannot start simulation without config");

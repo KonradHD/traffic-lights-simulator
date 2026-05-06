@@ -5,9 +5,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.traffic_lights.components.*;
 import com.traffic_lights.components.lights.RoadLights;
+import com.traffic_lights.components.lights.TrafficLight;
+import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
+import com.traffic_lights.dto.intersection.IntersectionLayout;
+import com.traffic_lights.dto.intersection.TrafficLightDTO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.traffic_lights.components.lights.TrafficLight.createTrafficLightFromDTO;
 
 @Slf4j
 public abstract class Intersection {
@@ -18,9 +24,44 @@ public abstract class Intersection {
     @Getter
     protected IntersectionStats stats;
 
-    protected Map<Direction, RoadLights> roadsLights;
+    protected final Map<Direction, RoadLights> roadsLights = new HashMap<>();
     protected List<IntersectionPhase> phases;
     protected int currentPhaseIndex;
+
+    public Intersection(String type) {
+        initIntersectionConfig(type);
+
+        int randomMax = phases.size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
+        this.currentPhaseIndex = randomIndex;
+        log.info("Selected random starting phase index: {}", randomIndex);
+
+        stats = new IntersectionStats(0, 0, 0, 0, 0);
+        activateCurrentPhase();
+    }
+
+    private void initIntersectionConfig(String type){
+        IntersectionConfig.loadConfig();
+        IntersectionLayout layoutTemplate = IntersectionConfig.getLayoutForType(type.toUpperCase());
+
+        for (Map.Entry<Direction, List<TrafficLightDTO>> entry : layoutTemplate.roadLights().entrySet()) {
+            Direction direction = entry.getKey();
+            List<TrafficLightDTO> jsonLights = entry.getValue();
+
+            List<TrafficLight> physicalLights = new ArrayList<>();
+            for (TrafficLightDTO light : jsonLights) {
+                physicalLights.add(createTrafficLightFromDTO(light));
+            }
+
+            roadsLights.put(direction, new RoadLights(physicalLights));
+        }
+
+        phases = layoutTemplate
+                .phases()
+                .stream()
+                .map(dto -> new IntersectionPhase(dto.paths(), dto.maxDuration()))
+                .toList();
+    }
 
 
     protected void activateCurrentPhase() {

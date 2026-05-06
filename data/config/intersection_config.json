@@ -1,34 +1,418 @@
 {
   "configs": {
     "STANDARD": {
-      "NORTH": [
-        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "SOUTH": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        }
       ],
-      "SOUTH": [
-        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
-      ],
-      "EAST": [
-        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
-      ],
-      "WEST": [
-        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+
+      "roadLights": {
+        "NORTH": [
+            {
+              "lightState": "RED",
+              "turn": "STRAIGHT",
+              "lightType": "GENERAL"
+            }
+          ],
+        "SOUTH": [
+            {
+              "lightState": "RED",
+              "turn": "STRAIGHT",
+              "lightType": "GENERAL"
+            }
+          ],
+        "WEST": [
+            {
+              "lightState": "RED",
+              "turn": "STRAIGHT",
+              "lightType": "GENERAL"
+            }
+          ],
+        "EAST": [
+            {
+              "lightState": "RED",
+              "turn": "STRAIGHT",
+              "lightType": "GENERAL"
+            }
+          ]
+      }
+    },
+
+
+
+
+    "LEFT_TURN_ARROWS": {
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH": ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH": ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "maxDuration": 3
+        },
+        {
+          "paths": {
+            "WEST": ["STRAIGHT", "RIGHT"],
+            "EAST": ["STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "WEST": ["LEFT"],
+            "EAST": ["LEFT"]
+          },
+          "maxDuration": 3
+        }
       ]
     },
+
+    "RIGHT_TURN_ARROWS": {
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH": ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"],
+            "EAST": ["RIGHT"],
+            "WEST": ["RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH": ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "maxDuration": 3
+        },
+        {
+          "paths": {
+            "WEST": ["STRAIGHT", "RIGHT"],
+            "EAST": ["STRAIGHT", "RIGHT"],
+            "NORTH": ["RIGHT"],
+            "SOUTH": ["RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "WEST": ["LEFT"],
+            "EAST": ["LEFT"]
+          },
+          "maxDuration": 3
+        }
+      ]
+    },
+
+    "SPLIT_PHASES": {
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "maxDuration": 4
+        },
+        {
+          "paths": {
+            "SOUTH": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "maxDuration": 4
+        },
+        {
+          "paths": {
+            "EAST": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "maxDuration": 4
+        },
+        {
+          "paths": {
+            "WEST": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "maxDuration": 4
+        }
+      ]
+    },
+
+
+
     "MULTI_LANES_STANDARD": {
-      "NORTH": [
-        { "allowedTurns": ["LEFT"] },
-        { "allowedTurns": ["STRAIGHT"] },
-        { "allowedTurns": ["RIGHT"] }
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT"] },
+          { "allowedTurns": ["RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH" : ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "maxDuration": 3
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        }
       ],
-      "SOUTH": [
-        { "allowedTurns": ["LEFT"] },
-        { "allowedTurns": ["STRAIGHT", "RIGHT"] }
-      ],
-      "EAST": [
-        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
-      ],
-      "WEST": [
-        { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+
+      "roadLights": {
+        "NORTH": [
+          {
+            "lightState": "RED",
+            "turn": "STRAIGHT",
+            "lightType": "GENERAL"
+          }
+        ],
+        "SOUTH": [
+          {
+            "lightState": "RED",
+            "turn": "STRAIGHT",
+            "lightType": "GENERAL"
+          }
+        ],
+        "WEST": [
+          {
+            "lightState": "RED",
+            "turn": "STRAIGHT",
+            "lightType": "GENERAL"
+          }
+        ],
+        "EAST": [
+          {
+            "lightState": "RED",
+            "turn": "STRAIGHT",
+            "lightType": "GENERAL"
+          }
+        ]
+      }
+    },
+
+
+
+    "": {
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT"] },
+          { "allowedTurns": ["RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH" : ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "maxDuration": 3
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        }
+      ]
+    },
+
+    "": {
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT"] },
+          { "allowedTurns": ["RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH" : ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "maxDuration": 3
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        }
+      ]
+    },
+
+    "": {
+      "roads": {
+        "NORTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT"] },
+          { "allowedTurns": ["RIGHT"] }
+        ],
+        "SOUTH": [
+          { "allowedTurns": ["LEFT"] },
+          { "allowedTurns": ["STRAIGHT", "RIGHT"] }
+        ],
+        "EAST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ],
+        "WEST": [
+          { "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"] }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH" : ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "maxDuration": 3
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "maxDuration": 5
+        }
       ]
     }
   }

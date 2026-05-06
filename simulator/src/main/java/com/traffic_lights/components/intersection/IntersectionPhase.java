@@ -2,6 +2,7 @@ package com.traffic_lights.components.intersection;
 
 import com.traffic_lights.components.Direction;
 import com.traffic_lights.components.Turn;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
@@ -11,21 +12,25 @@ import java.util.Map;
 
 @Getter
 @Data
+@AllArgsConstructor
 public class IntersectionPhase {
+
+    private final Map<Direction, List<Turn>> paths;
     private int maxDuration;
-    private final Map<Direction, List<Turn>> paths = new HashMap<>();
 
 
     public IntersectionPhase(List<Direction> directions, List<List<Turn>> turns, int maxDuration) {
         if(directions.size() != turns.size()) {
             throw new IllegalArgumentException("Directions and Turns must have the same length");
         }
+        paths = new HashMap<>();
         this.maxDuration = maxDuration;
 
         for(int i = 0; i < directions.size(); i++) {
             paths.put(directions.get(i), turns.get(i));
         }
     }
+
 
     public List<Direction> getDirections() {
         return paths.keySet().stream().toList();

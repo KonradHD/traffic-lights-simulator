@@ -1,10 +1,10 @@
 package com.traffic_lights.components.intersection;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.traffic_lights.components.*;
 import com.traffic_lights.dto.Vehicle;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -14,46 +14,16 @@ public class SingleLaneIntersection extends Intersection {
 
 
     public SingleLaneIntersection(String type) {
+        super(type);
 
         roads.put(Direction.EAST, new ArrayDeque<>());
         roads.put(Direction.WEST, new ArrayDeque<>());
         roads.put(Direction.NORTH, new ArrayDeque<>());
         roads.put(Direction.SOUTH, new ArrayDeque<>());
-        stats = new IntersectionStats(0, 0, 0, 0, 0);
-
-        switch (type.toUpperCase()) {
-            case "STANDARD" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createStandardPhases();
-                roadsLights = IntersectionType.createStandard().getRoadsConfig();
-            }
-            case "LEFT_TURN_ARROWS" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createLeftArrowsPhases();
-                roadsLights = IntersectionType.createWithLeftTurnArrows().getRoadsConfig();
-            }
-            case "RIGHT_TURN_ARROWS" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createRightTurnArrowsPhases();
-                roadsLights = IntersectionType.createWithRightTurnArrows().getRoadsConfig();
-            }
-            case "SPLIT_PHASES" -> {
-                intersectionType = type.toUpperCase();
-                phases = PhasesBuilder.createSplitPhases();
-                roadsLights = IntersectionType.createSplitPhases().getRoadsConfig();
-            }
-            default ->
-                    throw new IllegalArgumentException("Unknown intersection type: " + type);
-        }
-        int randomMax = phases.size();
-        int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
-        this.currentPhaseIndex = randomIndex;
-        log.info("Selected random starting phase index: {}", randomIndex);
-
-        activateCurrentPhase();
 
         log.info("Created {} intersection", this.intersectionType);
     }
+
 
 
     public void addVehicleToQueue(Vehicle vehicle) {
