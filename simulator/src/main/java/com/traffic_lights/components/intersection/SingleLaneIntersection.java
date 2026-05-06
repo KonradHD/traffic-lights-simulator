@@ -3,31 +3,68 @@ package com.traffic_lights.components.intersection;
 import java.util.*;
 
 import com.traffic_lights.components.*;
+import com.traffic_lights.components.lights.RoadLights;
+import com.traffic_lights.components.lights.TrafficLight;
+import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
 
+import com.traffic_lights.dto.intersection.IntersectionLayout;
+import com.traffic_lights.dto.intersection.LaneDTO;
+import com.traffic_lights.dto.intersection.TrafficLightDTO;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.traffic_lights.components.Lane.createLaneFromDTO;
+import static com.traffic_lights.components.lights.TrafficLight.createTrafficLightFromDTO;
 
 @Slf4j
 public class SingleLaneIntersection extends Intersection {
 
-    private final Map<Direction, Queue<Vehicle>> roads = new HashMap<>();
+    private final Map<Direction, Lane> roads = new HashMap<>();
 
 
     public SingleLaneIntersection(String type) {
         super(type);
-
-        roads.put(Direction.EAST, new ArrayDeque<>());
-        roads.put(Direction.WEST, new ArrayDeque<>());
-        roads.put(Direction.NORTH, new ArrayDeque<>());
-        roads.put(Direction.SOUTH, new ArrayDeque<>());
+        initRoads(type);
+        activateCurrentPhase();
 
         log.info("Created {} intersection", this.intersectionType);
+    }
+
+    private void initRoads(String type){
+        IntersectionConfig.loadConfig();
+        IntersectionLayout layoutTemplate = IntersectionConfig.getLayoutForType(type.toUpperCase());
+
+        for (Map.Entry<Direction, List<LaneDTO>> entry : layoutTemplate.roads().entrySet()) {
+            Direction direction = entry.getKey();
+            LaneDTO jsonLane = entry.getValue().getFirst();
+            Lane lane = createLaneFromDTO(jsonLane);
+
+            roads.put(direction, lane);
+        }
+    }
+
+    @Override
+    protected void activateCurrentPhase() {
+        if(phases.isEmpty()){
+            log.warn("Cannot initialize lights: phases list is empty!");
+            return;
+        }
+
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+
+        for (Map.Entry<Direction, Lane> entry : roads.entrySet()) {
+            Direction direction = entry.getKey();
+            Lane lane = entry.getValue();
+
+            List<Turn> allowedTurns = currentPhase.getTurns(direction);
+            lane.applyCurrentPhase(allowedTurns);
+        }
     }
 
 
 
     public void addVehicleToQueue(Vehicle vehicle) {
-        Queue<Vehicle> queue = roads.get(vehicle.startRoad());
+        Queue<Vehicle> queue = roads.get(vehicle.startRoad()).getVehicles();
         if (queue == null) {
             throw new IllegalArgumentException("Unknown direction: " + vehicle.startRoad());
         }
@@ -35,6 +72,7 @@ public class SingleLaneIntersection extends Intersection {
         this.stats.increaseVehiclesWaitingNumber();
     }
 
+    @Override
     protected boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
         Direction startingDirection;
         if(rightArrow){
@@ -43,7 +81,7 @@ public class SingleLaneIntersection extends Intersection {
             startingDirection = endDirection.getOpposite();
         }
 
-        Queue<Vehicle> queue = roads.get(startingDirection);
+        Queue<Vehicle> queue = roads.get(startingDirection).getVehicles();
         if (queue == null || queue.isEmpty()) {
             return true;
         }
@@ -59,7 +97,7 @@ public class SingleLaneIntersection extends Intersection {
         }
     }
 
-
+    @Override
     protected List<String> findVehiclesForCurrentPhase(){
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
@@ -67,7 +105,7 @@ public class SingleLaneIntersection extends Intersection {
         List<String> leftVehicles = new ArrayList<>();
         List<Direction> dirs = currentPhase.getDirections();
         for(Direction direction : dirs){
-            Queue<Vehicle> queue = roads.get(direction);
+            Queue<Vehicle> queue = roads.get(direction).getVehicles();
 
             if (queue == null || queue.isEmpty()) {
                 continue;
@@ -94,11 +132,12 @@ public class SingleLaneIntersection extends Intersection {
         return leftVehicles;
     }
 
+    @Override
     protected int countPotentialVehiclesForPhase(IntersectionPhase phase) {
         int potentialCount = 0;
 
         for (Direction direction : phase.getDirections()) {
-            Queue<Vehicle> queue = roads.get(direction);
+            Queue<Vehicle> queue = roads.get(direction).getVehicles();
             if (queue == null || queue.isEmpty()) continue;
 
             Vehicle firstCar = queue.peek();

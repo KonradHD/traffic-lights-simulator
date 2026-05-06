@@ -24,9 +24,9 @@ public abstract class Intersection {
     @Getter
     protected IntersectionStats stats;
 
-    protected final Map<Direction, RoadLights> roadsLights = new HashMap<>();
     protected List<IntersectionPhase> phases;
     protected int currentPhaseIndex;
+
 
     public Intersection(String type) {
         initIntersectionConfig(type);
@@ -37,24 +37,11 @@ public abstract class Intersection {
         log.info("Selected random starting phase index: {}", randomIndex);
 
         stats = new IntersectionStats(0, 0, 0, 0, 0);
-        activateCurrentPhase();
     }
 
     private void initIntersectionConfig(String type){
         IntersectionConfig.loadConfig();
         IntersectionLayout layoutTemplate = IntersectionConfig.getLayoutForType(type.toUpperCase());
-
-        for (Map.Entry<Direction, List<TrafficLightDTO>> entry : layoutTemplate.roadLights().entrySet()) {
-            Direction direction = entry.getKey();
-            List<TrafficLightDTO> jsonLights = entry.getValue();
-
-            List<TrafficLight> physicalLights = new ArrayList<>();
-            for (TrafficLightDTO light : jsonLights) {
-                physicalLights.add(createTrafficLightFromDTO(light));
-            }
-
-            roadsLights.put(direction, new RoadLights(physicalLights));
-        }
 
         phases = layoutTemplate
                 .phases()
@@ -64,22 +51,8 @@ public abstract class Intersection {
     }
 
 
-    protected void activateCurrentPhase() {
-        if(phases.isEmpty()){
-            log.warn("Cannot initialize lights: phases list is empty!");
-            return;
-        }
+    protected abstract void activateCurrentPhase();
 
-        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
-
-        for (Map.Entry<Direction, RoadLights> entry : roadsLights.entrySet()) {
-            Direction direction = entry.getKey();
-            RoadLights hardwareLights = entry.getValue();
-
-            List<Turn> allowedTurns = currentPhase.getTurns(direction);
-            hardwareLights.applyAllowedTurns(allowedTurns);
-        }
-    }
 
     protected void switchToNextPhase() {
         currentPhaseIndex++;

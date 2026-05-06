@@ -22,7 +22,7 @@ public class App
             SimulationInput input = InputParser.readFile(fileName);
             IntersectionSimulator simulator = new IntersectionSimulator();
     
-            SimulationOutput output = simulator.runSimulation(input.commands(), "MULTI_LANES_STANDARD");
+            SimulationOutput output = simulator.runSimulation(input.commands(), "MULTI_ASSYMETRIC_LEFT_ARROW");
     
             OutputParser.saveOutput(fileName, output);
             

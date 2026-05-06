@@ -17,7 +17,7 @@ public class TrafficLight {
     private LightState lightState;
 
     private final Turn turn;
-    private final LightType lightType;
+    private final LightType type;
 
     public void nextLight(){
         lightState.nextState();
@@ -28,7 +28,7 @@ public class TrafficLight {
             return List.of();
         }
 
-        if(lightType == LightType.GENERAL){
+        if(type == LightType.GENERAL){
             return List.of(Turn.STRAIGHT, Turn.LEFT, Turn.RIGHT);
         }
 

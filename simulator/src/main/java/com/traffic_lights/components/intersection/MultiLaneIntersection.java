@@ -20,6 +20,7 @@ public class MultiLaneIntersection extends Intersection {
     public MultiLaneIntersection(String type) {
         super(type);
         initLanes(type);
+        activateCurrentPhase();
 
         log.info("Created {} intersection", this.intersectionType);
     }
@@ -34,10 +35,31 @@ public class MultiLaneIntersection extends Intersection {
 
             List<Lane> physicalLanes = new ArrayList<>();
             for (LaneDTO jsonLane : jsonLanes) {
-                physicalLanes.add(new Lane(jsonLane.allowedTurns()));
+                physicalLanes.add(Lane.createLaneFromDTO(jsonLane));
             }
 
             roads.put(direction, physicalLanes);
+        }
+    }
+
+    @Override
+    protected void activateCurrentPhase() {
+        if(phases.isEmpty()){
+            log.warn("Cannot initialize lights: phases list is empty!");
+            return;
+        }
+
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+
+        for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
+            Direction direction = entry.getKey();
+            List<Lane> lanes = entry.getValue();
+
+            List<Turn> allowedTurns = currentPhase.getTurns(direction);
+            for(Lane lane : lanes){
+                lane.applyCurrentPhase(allowedTurns);
+            }
+
         }
     }
 
@@ -61,6 +83,7 @@ public class MultiLaneIntersection extends Intersection {
         this.stats.increaseVehiclesWaitingNumber();
     }
 
+    @Override
     protected boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
         Direction startingDirection;
         if (rightArrow) {
@@ -102,7 +125,7 @@ public class MultiLaneIntersection extends Intersection {
         return true;
     }
 
-
+    @Override
     protected List<String> findVehiclesForCurrentPhase() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
@@ -149,6 +172,7 @@ public class MultiLaneIntersection extends Intersection {
         return leftVehicles;
     }
 
+    @Override
     protected int countPotentialVehiclesForPhase(IntersectionPhase phase) {
         int potentialCount = 0;
 

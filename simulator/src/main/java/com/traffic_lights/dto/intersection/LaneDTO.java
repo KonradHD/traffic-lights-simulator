@@ -5,6 +5,7 @@ import com.traffic_lights.components.Turn;
 import java.util.List;
 
 public record LaneDTO(
-        List<Turn> allowedTurns
+        List<Turn> allowedTurns,
+        List<TrafficLightDTO> trafficLights
 ) {
 }
