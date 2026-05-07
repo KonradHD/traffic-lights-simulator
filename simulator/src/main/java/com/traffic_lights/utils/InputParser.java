@@ -11,13 +11,13 @@ import java.io.IOException;
 @Slf4j
 public class InputParser {
 
-    private static final String inputPath = "data/input/";
+//    private static final String inputPath = "";
     private static final ObjectMapper mapper = new ObjectMapper();
 
 
     public static SimulationInput readFile(String fileName) throws IOException{
-        String fullPath = inputPath + fileName;
-        File inputFile = new File(fullPath);
+//        String fullPath = inputPath + fileName;
+        File inputFile = new File(fileName);
         SimulationInput input;
 
 

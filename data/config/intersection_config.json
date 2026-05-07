@@ -1,0 +1,664 @@
+{
+  "intersectionParameters": {
+    "weightQueue": 1.0,
+    "weightWaitTime": 2.0
+  },
+
+  "intersectionTypes": {
+    "STANDARD": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ]
+      },
+
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "SOUTH": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 5
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 5
+        }
+      ]
+
+
+    },
+
+
+
+
+    "RIGHT_TURN_ARROWS": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              },
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "CONDITIONAL"
+              }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              },
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "CONDITIONAL"
+              }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              },
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "CONDITIONAL"
+              }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              },
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "CONDITIONAL"
+              }
+            ]
+          }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH": ["LEFT", "STRAIGHT", "RIGHT"],
+            "SOUTH": ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["RIGHT"],
+            "WEST": ["RIGHT"]
+          },
+          "basicDuration": 5
+        },
+        {
+          "paths": {
+            "WEST": ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"],
+            "NORTH": ["RIGHT"],
+            "SOUTH": ["RIGHT"]
+          },
+          "basicDuration": 5
+        }
+      ]
+    },
+
+
+
+
+    "SPLIT_PHASES": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "basicDuration": 4
+        },
+        {
+          "paths": {
+            "SOUTH": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "basicDuration": 4
+        },
+        {
+          "paths": {
+            "EAST": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "basicDuration": 4
+        },
+        {
+          "paths": {
+            "WEST": ["STRAIGHT", "LEFT", "RIGHT"]
+          },
+          "basicDuration": 4
+        }
+      ]
+    },
+
+
+
+    "MULTI_LANES_STANDARD": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "LEFT_ONLY",
+                "lightType": "DIRECTIONAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "STRAIGHT_ONLY",
+                "lightType": "GENERAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "LEFT_ONLY",
+                "lightType": "DIRECTIONAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH" : ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "basicDuration": 3
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 5
+        }
+      ]
+    },
+
+
+
+    "MULTI_LINES_LEFT_ARROWS": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "LEFT_ONLY",
+                "lightType": "DIRECTIONAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "LEFT_ONLY",
+                "lightType": "DIRECTIONAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 5
+        },
+        {
+          "paths": {
+            "NORTH" : ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "basicDuration": 3
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 5
+        }
+      ]
+    },
+
+    "MULTI_MAJOR_ARTERIAL": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
+            ]
+          }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH": ["STRAIGHT", "RIGHT"],
+            "SOUTH": ["STRAIGHT", "RIGHT"],
+            "EAST": ["RIGHT"],
+            "WEST": ["RIGHT"]
+          },
+          "basicDuration": 8
+        },
+        {
+          "paths": {
+            "NORTH": ["LEFT"],
+            "SOUTH": ["LEFT"]
+          },
+          "basicDuration": 4
+        },
+        {
+          "paths": {
+            "WEST": ["STRAIGHT", "RIGHT"],
+            "EAST": ["STRAIGHT", "RIGHT"],
+            "NORTH": ["RIGHT"],
+            "SOUTH": ["RIGHT"]
+          },
+          "basicDuration": 8
+        },
+        {
+          "paths": {
+            "WEST": ["LEFT"],
+            "EAST": ["LEFT"]
+          },
+          "basicDuration": 4
+        }
+      ]
+    },
+
+    "MULTI_ASYMMETRIC_LEFT_ARROW": {
+      "roads": {
+        "NORTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "SOUTH": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "STRAIGHT_AND_LEFT",
+                "lightType": "GENERAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "GENERAL"
+              },
+              {
+                "lightState": "RED",
+                "turnGroup": "RIGHT_ONLY",
+                "lightType": "CONDITIONAL"
+              }
+            ]
+          }
+        ],
+        "EAST": [
+          {
+            "allowedTurns": ["LEFT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "LEFT_ONLY",
+                "lightType": "DIRECTIONAL"
+              }
+            ]
+          },
+          {
+            "allowedTurns": ["STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ],
+        "WEST": [
+          {
+            "allowedTurns": ["LEFT", "STRAIGHT", "RIGHT"],
+            "trafficLights": [
+              {
+                "lightState": "RED",
+                "turnGroup": "ALL_DIRECTIONS",
+                "lightType": "GENERAL"
+              }
+            ]
+          }
+        ]
+      },
+      "phases": [
+        {
+          "paths": {
+            "NORTH" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "SOUTH": ["LEFT", "STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 3
+        },
+        {
+          "paths": {
+            "EAST": ["LEFT", "STRAIGHT", "RIGHT"],
+            "WEST" : ["STRAIGHT", "RIGHT"]
+          },
+          "basicDuration": 4
+        },
+        {
+          "paths": {
+            "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
+            "SOUTH": ["RIGHT"]
+          },
+          "basicDuration": 4
+        }
+      ]
+    }
+  }
+}

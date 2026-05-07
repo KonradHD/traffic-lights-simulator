@@ -55,7 +55,7 @@ public class InputParserTest {
 
     @Test
     void shouldParseValidInputFileAndReturnSimulationInput() throws IOException {
-        SimulationInput result = InputParser.readFile(VALID_FILE_NAME);
+        SimulationInput result = InputParser.readFile(TEST_DIR + VALID_FILE_NAME);
 
         assertNotNull(result);
         assertEquals(2, result.commands().size());
@@ -65,7 +65,7 @@ public class InputParserTest {
     void shouldThrowIOExceptionWhenJsonIsMalformed() {
         assertThrows(
                 IOException.class,
-                () -> InputParser.readFile(INVALID_FILE_NAME)
+                () -> InputParser.readFile(TEST_DIR + INVALID_FILE_NAME)
         );
     }
 }

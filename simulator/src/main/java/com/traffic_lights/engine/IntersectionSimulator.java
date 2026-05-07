@@ -6,8 +6,6 @@ import com.traffic_lights.commands.Command;
 import com.traffic_lights.commands.StepCommand;
 import com.traffic_lights.intersection.Intersection;
 import com.traffic_lights.intersection.IntersectionFactory;
-import com.traffic_lights.intersection.MultiLaneIntersection;
-import com.traffic_lights.intersection.SingleLaneIntersection;
 import com.traffic_lights.dto.SimulationOutput;
 import lombok.extern.slf4j.Slf4j;
 

@@ -79,7 +79,7 @@
 
                     <archive>
                         <manifest>
-                            <mainClass>com.traffic_lights.Main</mainClass>
+                            <mainClass>com.traffic_lights.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

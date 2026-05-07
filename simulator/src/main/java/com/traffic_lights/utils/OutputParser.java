@@ -13,25 +13,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OutputParser {
 
-    private final static String outputPath = "data/output/";
     private final static ObjectMapper mapper = new ObjectMapper();
 
     public static void saveOutput(String fileName, SimulationOutput output){
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        Long epochs = Instant.now().getEpochSecond();
-        String fullPath = "%s%d_%s".formatted(outputPath, epochs, fileName);
+//        Long epochs = Instant.now().getEpochSecond();
+//        String fullPath = "%s%d_%s".formatted(outputPath, epochs, fileName);
 
-        File fileOutput = new File(fullPath);
+        File fileOutput = new File(fileName);
 
         try{
-            
-            fileOutput.getParentFile().mkdirs();
+            File parentDir = fileOutput.getParentFile();
+
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
             mapper.writeValue(fileOutput, output);
-            log.info("Successfully saved simulation output to: {}", fullPath);
+            log.info("Successfully saved simulation output to: {}", fileName);
 
         }catch(IOException e ){
-            log.error("Cannot save output file: {}, {}", fullPath, e.getMessage());
+            log.error("Cannot save output file: {}, {}", fileName, e.getMessage());
         }
     }
 }

@@ -97,7 +97,7 @@ java -jar simulator.jar input.json output.json [intersection_type]
 #### Parametry polecenia:
 * `input.json` – ścieżka do istniejącego pliku z listą komend do wykonania
 * `output.json` – ścieżka, pod którą symulator zapisze plik JSON zawierający wynik symulacji
-* `[intersection_type]` (opcjonalny) – flaga definiująca rodzaj skrzyżowania (np. MULTI_MAJOR_ARTERIAL). Jeśli ten argument zostanie pominięty, aplikacja automatycznie uruchomi się dla typu standard.
+* `[intersection_type]` (opcjonalny) – flaga definiująca rodzaj skrzyżowania (np. MULTI_MAJOR_ARTERIAL). Jeśli ten argument zostanie pominięty, aplikacja automatycznie uruchomi się dla typu standard. Dostępny typy skrzyżowań dostępne są w pliku `simulator/data/config/intersection_config.json`.
 ## Testy
 
 Niezawodność i stabilność symulatora została zagwarantowana dzięki pokryciu kodu testami jednostkowymi oraz integracyjnymi. Testy jednostkowe weryfikują poprawność kluczowych mechanizmów domenowych, takich jak wyliczanie priorytetów faz, poprawność matematyczna algorytmu proporcjonalnego czy poprawność wczytywania danych wejściowych. Z kolei testy integracyjne sprawdzają całościowe działanie systemu - wielokrokowe wykonanie sekwencji zdarzeń na skrzyżowaniu, walidację formatu i logiki wygenerowanych danych wyjściowych. Dodatkowo, zastosowałem pipeline CI/CD - GitHub Actions, co zapewnia natychmiastową weryfikację poprawności kodu przy każdej modyfikacji.

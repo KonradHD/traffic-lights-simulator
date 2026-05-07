@@ -2,7 +2,6 @@ package com.traffic_lights.intersection;
 
 import java.util.*;
 
-import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.intersection.phase.IntersectionPhase;
 import com.traffic_lights.intersection.phase.PhaseScheduler;
 import com.traffic_lights.model.*;

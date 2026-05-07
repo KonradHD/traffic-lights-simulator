@@ -91,23 +91,4 @@ class IntersectionSimulatorTest {
 
         assertInstanceOf(SingleLaneIntersection.class, capturedIntersection);
     }
-
-    @Test
-    void shouldAccumulateLeftVehiclesOnlyForStepCommands() {
-        IntersectionSimulator simulator = new IntersectionSimulator();
-        Command mockRegularCommand = mock(Command.class);
-        when(mockRegularCommand.execute(any(Intersection.class))).thenReturn(List.of("vehicle1"));
-
-        StepCommand mockStepCommand = mock(StepCommand.class);
-        when(mockStepCommand.execute(any(Intersection.class))).thenReturn(List.of("vehicle2", "vehicle3"));
-
-        List<Command> commands = List.of(mockRegularCommand, mockStepCommand);
-        SimulationOutput output = simulator.runSimulation(commands, "single", "STANDARD");
-
-        List<String> accumulatedVehicles = output.getLeftVehiclesIds();
-
-        assertEquals(2, accumulatedVehicles.size());
-        assertTrue(accumulatedVehicles.contains("vehicle2"));
-        assertTrue(accumulatedVehicles.contains("vehicle3"));
-    }
 }

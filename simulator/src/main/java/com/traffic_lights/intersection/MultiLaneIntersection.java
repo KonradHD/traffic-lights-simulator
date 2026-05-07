@@ -1,6 +1,5 @@
 package com.traffic_lights.intersection;
 
-import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.intersection.phase.IntersectionPhase;
 import com.traffic_lights.intersection.phase.PhaseScheduler;
 import com.traffic_lights.model.Direction;
@@ -169,7 +168,6 @@ public class MultiLaneIntersection extends Intersection {
         int vehiclesOverall = 0;
 
         for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
-            Direction dir = entry.getKey();
             List<Lane> lanes = entry.getValue();
             if (lanes == null || lanes.isEmpty()) {
                 continue;

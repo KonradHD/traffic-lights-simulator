@@ -3,8 +3,6 @@ package com.traffic_lights.intersection;
 import com.traffic_lights.model.Direction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.util.HashMap;
 import java.util.Map;
 

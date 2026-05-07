@@ -7,8 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.traffic_lights.intersection.Intersection;
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME, 
-    include = JsonTypeInfo.As.PROPERTY, 
+    use = JsonTypeInfo.Id.NAME,
     property = "type"
 )
 @JsonSubTypes({
@@ -17,6 +16,6 @@ import com.traffic_lights.intersection.Intersection;
 })
 public interface Command {
     
-    public List<String> execute(Intersection intersection);
+    List<String> execute(Intersection intersection);
 
 }
