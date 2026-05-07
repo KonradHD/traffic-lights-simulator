@@ -134,16 +134,19 @@ class SingleLaneIntersectionTest {
     @Test
     void shouldLetVehiclesPassWhenNoConflict() {
         SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
-        intersection.addVehicleToQueue(new Vehicle("V1", Direction.NORTH, Direction.SOUTH));
-        intersection.addVehicleToQueue(new Vehicle("V2", Direction.SOUTH, Direction.NORTH));
+        Vehicle vehicle1 = new Vehicle("vehicle1", Direction.NORTH, Direction.SOUTH);
+        Vehicle vehicle2 = new Vehicle("vehicle2", Direction.SOUTH, Direction.NORTH);
+
+        intersection.addVehicleToQueue(vehicle1);
+        intersection.addVehicleToQueue(vehicle2);
 
         intersection.switchToPhase(0);
 
-        List<String> leftVehicles = intersection.findVehiclesForCurrentPhase();
+        List<Vehicle> leftVehicles = intersection.findVehiclesForCurrentPhase();
 
         assertEquals(2, leftVehicles.size());
-        assertTrue(leftVehicles.contains("V1"));
-        assertTrue(leftVehicles.contains("V2"));
+        assertTrue(leftVehicles.contains(vehicle1));
+        assertTrue(leftVehicles.contains(vehicle2));
     }
 
     @Test
@@ -151,14 +154,17 @@ class SingleLaneIntersectionTest {
         SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
 
         intersection.switchToPhase(1);
-        intersection.addVehicleToQueue(new Vehicle("V1", Direction.NORTH, Direction.EAST));
-        intersection.addVehicleToQueue(new Vehicle("V2", Direction.SOUTH, Direction.NORTH));
+        Vehicle vehicle1 = new Vehicle("vehicle1", Direction.NORTH, Direction.EAST);
+        Vehicle vehicle2 = new Vehicle("vehicle2", Direction.SOUTH, Direction.NORTH);
 
-        List<String> leftVehicles = intersection.findVehiclesForCurrentPhase();
+        intersection.addVehicleToQueue(vehicle1);
+        intersection.addVehicleToQueue(vehicle2);
+
+        List<Vehicle> leftVehicles = intersection.findVehiclesForCurrentPhase();
 
         assertEquals(1, leftVehicles.size());
-        assertTrue(leftVehicles.contains("V2"));
-        assertFalse(leftVehicles.contains("V1"));
+        assertTrue(leftVehicles.contains(vehicle2));
+        assertFalse(leftVehicles.contains(vehicle1));
     }
 }
 

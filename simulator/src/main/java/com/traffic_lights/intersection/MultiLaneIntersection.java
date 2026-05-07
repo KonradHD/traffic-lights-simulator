@@ -80,7 +80,7 @@ public class MultiLaneIntersection extends Intersection {
                 ));
 
         bestLane.getVehicles().add(vehicle);
-        this.stats.increaseVehiclesWaitingNumber();
+        this.stats.increaseVehiclesWaiting(startDirection);
     }
 
     @Override
@@ -94,12 +94,12 @@ public class MultiLaneIntersection extends Intersection {
 
         List<Lane> lanes = roads.get(startingDirection);
         if (lanes == null || lanes.isEmpty()) {
-            return true;
+            return false;
         }
 
         List<Turn> availableTurns = phase.getTurns(startingDirection);
         if (availableTurns == null || availableTurns.isEmpty()) {
-            return true;
+            return false;
         }
 
         for (Lane lane : lanes) {
@@ -113,24 +113,24 @@ public class MultiLaneIntersection extends Intersection {
             if (availableTurns.contains(intendedTurn)) {
                 if (rightArrow) {
                     if (intendedTurn == Turn.STRAIGHT) {
-                        return false;
+                        return true;
                     }
                 } else {
                     if (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT) {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override
-    protected List<String> findVehiclesForCurrentPhase() {
+    protected List<Vehicle> findVehiclesForCurrentPhase() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
 
-        List<String> leftVehicles = new ArrayList<>();
+        List<Vehicle> leftVehicles = new ArrayList<>();
         List<Direction> dirs = currentPhase.getDirections();
 
         for (Direction direction : dirs) {
@@ -146,7 +146,6 @@ public class MultiLaneIntersection extends Intersection {
 
             for (Lane lane : lanes) {
                 Queue<Vehicle> queue = lane.getVehicles();
-                log.info("Car on lanes, direction: {}, lane allowed turns: {}, cars: {}", direction, lane.getAvailableTurns(), queue.size());
                 if (queue.isEmpty()) {
                     continue;
                 }
@@ -155,22 +154,21 @@ public class MultiLaneIntersection extends Intersection {
                 Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
 
                 if (intendedTurn != null && availableTurns.contains(intendedTurn)) {
-                    if (intendedTurn == Turn.LEFT && !isPrioritized(direction, currentPhase, false)) {
+                    if (intendedTurn == Turn.LEFT && isPrioritized(direction, currentPhase, false)) {
                         log.info("{} on lane {} is turning left and is not prioritized", vehicle.id(), lanes.indexOf(lane));
                         continue;
                     }
 
-                    if (intendedTurn == Turn.RIGHT && !isPrioritized(direction, currentPhase, true)) {
+                    if (intendedTurn == Turn.RIGHT && isPrioritized(direction, currentPhase, true)) {
                         log.info("{} on lane {} is turning right with conditional arrow and is not prioritized", vehicle.id(), lanes.indexOf(lane));
                         continue;
                     }
 
                     queue.poll();
-                    leftVehicles.add(vehicle.id());
+                    leftVehicles.add(vehicle);
                 }
             }
         }
-        log.info("Left vehicles: {}", leftVehicles.toString());
         return leftVehicles;
     }
 
@@ -195,9 +193,9 @@ public class MultiLaneIntersection extends Intersection {
                 if (allowedTurns.contains(intendedTurn)) {
                     boolean canActuallyGo = true;
 
-                    if (intendedTurn == Turn.LEFT && !isPrioritized(direction, phase, false)) {
+                    if (intendedTurn == Turn.LEFT && isPrioritized(direction, phase, false)) {
                         canActuallyGo = false;
-                    } else if (intendedTurn == Turn.RIGHT && !isPrioritized(direction, phase, true)) {
+                    } else if (intendedTurn == Turn.RIGHT && isPrioritized(direction, phase, true)) {
                         canActuallyGo = false;
                     }
 

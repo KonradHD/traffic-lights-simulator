@@ -28,7 +28,7 @@ class IntersectionTest {
     static class TestableIntersection extends Intersection {
 
         boolean wasActivateCalled = false;
-        List<String> vehiclesToReturn = new ArrayList<>();
+        List<Vehicle> vehiclesToReturn = new ArrayList<>();
         Map<Integer, Integer> potentialVehiclesPerPhaseIndex = new HashMap<>();
 
         public TestableIntersection(String type) {
@@ -46,11 +46,11 @@ class IntersectionTest {
 
         @Override
         protected boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
-            return false;
+            return true;
         }
 
         @Override
-        protected List<String> findVehiclesForCurrentPhase() {
+        protected List<Vehicle> findVehiclesForCurrentPhase() {
             return vehiclesToReturn;
         }
 
@@ -160,8 +160,10 @@ class IntersectionTest {
     void shouldUpdateStatsDuringProcessStep() {
         TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
         intersection.switchToPhase(0);
-        intersection.vehiclesToReturn = List.of("vehicle1", "vehicle2");
-        intersection.getStats().addWaitingVehicles(5);
+        intersection.vehiclesToReturn = List.of(
+                new Vehicle("vehicle1", Direction.EAST, Direction.SOUTH),
+                new Vehicle("vehicle2", Direction.EAST, Direction.SOUTH));
+        intersection.getStats().addWaitingVehicles(Direction.EAST, 5);
 
         List<String> leftVehicles = intersection.processStep();
 

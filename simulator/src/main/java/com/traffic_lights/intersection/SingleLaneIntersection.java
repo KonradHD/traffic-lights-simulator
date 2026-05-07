@@ -62,12 +62,13 @@ public class SingleLaneIntersection extends Intersection {
 
 
     public void addVehicleToQueue(Vehicle vehicle) {
-        Queue<Vehicle> queue = roads.get(vehicle.startRoad()).getVehicles();
+        Direction dir = vehicle.startRoad();
+        Queue<Vehicle> queue = roads.get(dir).getVehicles();
         if (queue == null) {
             throw new IllegalArgumentException("Unknown direction: " + vehicle.startRoad());
         }
         queue.add(vehicle);
-        this.stats.increaseVehiclesWaitingNumber();
+        this.stats.increaseVehiclesWaiting(dir);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class SingleLaneIntersection extends Intersection {
 
         Queue<Vehicle> queue = roads.get(startingDirection).getVehicles();
         if (queue == null || queue.isEmpty()) {
-            return true;
+            return false;
         }
 
         Vehicle vehicle = queue.peek();
@@ -89,18 +90,18 @@ public class SingleLaneIntersection extends Intersection {
         List<Turn> availableTurns = phase.getTurns(startingDirection);
 
         if(rightArrow){
-            return !(availableTurns != null && availableTurns.contains(intendedTurn) && intendedTurn == Turn.STRAIGHT);
+            return availableTurns != null && availableTurns.contains(intendedTurn) && intendedTurn == Turn.STRAIGHT;
         }else{
-            return !(availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT));
+            return availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT);
         }
     }
 
     @Override
-    protected List<String> findVehiclesForCurrentPhase(){
+    protected List<Vehicle> findVehiclesForCurrentPhase(){
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
 
-        List<String> leftVehicles = new ArrayList<>();
+        List<Vehicle> leftVehicles = new ArrayList<>();
         List<Direction> dirs = currentPhase.getDirections();
         for(Direction direction : dirs){
             Queue<Vehicle> queue = roads.get(direction).getVehicles();
@@ -113,18 +114,18 @@ public class SingleLaneIntersection extends Intersection {
             Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
             if(intendedTurn != null && availableTurns.contains(intendedTurn)){
 
-                if(intendedTurn == Turn.LEFT && !isPrioritized(direction, currentPhase, false)){
+                if(intendedTurn == Turn.LEFT && isPrioritized(direction, currentPhase, false)){
                     log.info("{} is turning left and is not prioritized", vehicle.id());
                     continue;
                 }
 
-                if(intendedTurn == Turn.RIGHT && !isPrioritized(direction, currentPhase, true)){
+                if(intendedTurn == Turn.RIGHT && isPrioritized(direction, currentPhase, true)){
                     log.info("{} is turning right with conditional arrow and is not prioritized", vehicle.id());
                     continue;
                 }
 
                 queue.poll();
-                leftVehicles.add(vehicle.id());
+                leftVehicles.add(vehicle);
             }
         }
         return leftVehicles;

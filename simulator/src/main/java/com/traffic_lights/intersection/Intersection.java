@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class Intersection {
@@ -33,7 +35,7 @@ public abstract class Intersection {
             log.info("Selected random starting phase index: {}", randomIndex);
         }
 
-        stats = new IntersectionStats(0, 0, 0, 0, 0);
+        stats = new IntersectionStats();
     }
 
     private void initIntersectionConfig(String type){
@@ -81,7 +83,7 @@ public abstract class Intersection {
 
     protected abstract boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow);
 
-    protected abstract List<String> findVehiclesForCurrentPhase();
+    protected abstract List<Vehicle> findVehiclesForCurrentPhase();
 
     protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
 
@@ -117,7 +119,7 @@ public abstract class Intersection {
             switchToNextPhase();
         }
 
-        List<String> leftVehicles = findVehiclesForCurrentPhase();
+        List<Vehicle> leftVehicles = findVehiclesForCurrentPhase();
 
         if(leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0){
             boolean isOptimized = optimizeCurrentPhase();
@@ -130,8 +132,18 @@ public abstract class Intersection {
 
         this.stats.increaseStepsNumber();
         this.stats.addVehiclesLeft(leftVehicles.size());
-        this.stats.removeWaitingVehicles(leftVehicles.size());
-        return leftVehicles;
+
+        Map<Direction, Long> vehiclesByDirection = leftVehicles.stream()
+                .collect(Collectors.groupingBy(Vehicle::startRoad, Collectors.counting()));
+
+        for (Map.Entry<Direction, Long> entry : vehiclesByDirection.entrySet()) {
+            Direction direction = entry.getKey();
+            int amount = entry.getValue().intValue();
+
+            this.stats.removeWaitingVehicles(direction, amount);
+        }
+
+        return leftVehicles.stream().map(Vehicle::id).toList();
     }
 
 }

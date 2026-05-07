@@ -137,31 +137,37 @@ class MultiLaneIntersectionTest {
     void shouldLetVehiclesPass() {
         MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
         intersection.switchToPhase(0);
+        Vehicle vehicle1 = new Vehicle("vehicle_north1", Direction.NORTH, Direction.SOUTH);
+        Vehicle vehicle2 = new Vehicle("vehicle_north2", Direction.NORTH, Direction.WEST);
+        Vehicle vehicle3 = new Vehicle("vehicle_south1", Direction.SOUTH, Direction.NORTH);
 
-        intersection.addVehicleToQueue(new Vehicle("vehicle_north2", Direction.NORTH, Direction.WEST));
-        intersection.addVehicleToQueue(new Vehicle("vehicle_north1", Direction.NORTH, Direction.SOUTH));
-        intersection.addVehicleToQueue(new Vehicle("vehicle_south1", Direction.SOUTH, Direction.NORTH));
 
-        List<String> leftVehicles = intersection.findVehiclesForCurrentPhase();
+        intersection.addVehicleToQueue(vehicle2);
+        intersection.addVehicleToQueue(vehicle1);
+        intersection.addVehicleToQueue(vehicle3);
+
+        List<Vehicle> leftVehicles = intersection.findVehiclesForCurrentPhase();
 
         assertEquals(3, leftVehicles.size());
-        assertTrue(leftVehicles.contains("vehicle_north1"));
-        assertTrue(leftVehicles.contains("vehicle_north2"));
-        assertTrue(leftVehicles.contains("vehicle_south1"));
+        assertTrue(leftVehicles.contains(vehicle1));
+        assertTrue(leftVehicles.contains(vehicle2));
+        assertTrue(leftVehicles.contains(vehicle3));
     }
 
     @Test
     void shouldYieldPriorityAcrossMultipleLanes() {
         MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
         intersection.switchToPhase(0);
+        Vehicle vehicle1 = new Vehicle("vehicle_left", Direction.NORTH, Direction.EAST);
+        Vehicle vehicle2 = new Vehicle("vehicle_straight", Direction.SOUTH, Direction.NORTH);
 
-        intersection.addVehicleToQueue(new Vehicle("vehicle_left", Direction.NORTH, Direction.EAST));
-        intersection.addVehicleToQueue(new Vehicle("vehicle_straight", Direction.SOUTH, Direction.NORTH));
+        intersection.addVehicleToQueue(vehicle1);
+        intersection.addVehicleToQueue(vehicle2);
 
-        List<String> leftVehicles = intersection.findVehiclesForCurrentPhase();
+        List<Vehicle> leftVehicles = intersection.findVehiclesForCurrentPhase();
 
         assertEquals(1, leftVehicles.size());
-        assertTrue(leftVehicles.contains("vehicle_straight"));
-        assertFalse(leftVehicles.contains("vehicle_left"));
+        assertTrue(leftVehicles.contains(vehicle2));
+        assertFalse(leftVehicles.contains(vehicle1));
     }
 }
