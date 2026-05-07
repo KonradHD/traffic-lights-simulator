@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.intersection.phase.PhaseScheduler;
 import com.traffic_lights.model.*;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.model.Vehicle;
@@ -22,8 +23,8 @@ public class SingleLaneIntersection extends Intersection {
     private final Map<Direction, Lane> roads = new HashMap<>();
 
 
-    public SingleLaneIntersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
-        super(type, phases, parameters);
+    public SingleLaneIntersection(String type, List<IntersectionPhase> phases, PhaseScheduler scheduler) {
+        super(type, phases, scheduler);
         initRoads(type);
         activateCurrentPhase();
 
@@ -101,33 +102,23 @@ public class SingleLaneIntersection extends Intersection {
 
 
     @Override
-    protected boolean isAnyVehicleWaiting(IntersectionPhase phase){
-        for (Map.Entry<Direction, Lane> entry : roads.entrySet()) {
+    public int getVehiclesOverall(){
+        int vehiclesOverall = 0;
+        for(Map.Entry<Direction, Lane> entry : roads.entrySet()){
             Direction dir = entry.getKey();
-            Queue<Vehicle> queue = entry.getValue().getVehicles();
+            Queue<Vehicle> queue = roads.get(dir).getVehicles();
 
             if (queue == null || queue.isEmpty()) {
                 continue;
             }
-
-            List<Turn> allowedTurns = phase.getTurns(dir);
-            if (allowedTurns != null && !allowedTurns.isEmpty()) {
-                for (Vehicle vehicle : queue) {
-                    Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
-                    if (allowedTurns.contains(intendedTurn)) {
-                        return true;
-                    }
-                }
-            }
+            vehiclesOverall += queue.size();
         }
-
-        return false;
+        return vehiclesOverall;
     }
 
     @Override
-    protected double calculatePhasePriority(IntersectionPhase phase) {
+    public int getVehiclesForPhase(IntersectionPhase phase){
         int vehiclesCount = 0;
-        int waitingTime = phase.getWaitingTime();
 
         for (Map.Entry<Direction, Lane> entry : roads.entrySet()) {
             Direction dir = entry.getKey();
@@ -149,57 +140,18 @@ public class SingleLaneIntersection extends Intersection {
                 }
             }
         }
-
-        return (this.parameters.weightQueue() * vehiclesCount) + (this.parameters.weightWaitTime() * waitingTime);
-    }
-
-    @Override
-    protected void setOptimalPhaseTime(IntersectionPhase phase){
-        int vehiclesInPhase = 0;
-        int vehiclesOverall = 0;
-        int cycleBasicDuration = getCycleBasicDuration();
-        int phaseBasicDuration = phase.getBasicDuration();
-
-        for(Map.Entry<Direction, Lane> entry : roads.entrySet()){
-            Direction dir = entry.getKey();
-            Queue<Vehicle> queue = roads.get(dir).getVehicles();
-            if (queue == null || queue.isEmpty()) {
-                continue;
-            }
-
-            vehiclesOverall += queue.size();
-            List<Turn> phaseAllowedTurns = phase.getTurns(dir);
-
-            if (phaseAllowedTurns != null && !phaseAllowedTurns.isEmpty()) {
-                for (Vehicle vehicle : queue) {
-                    Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
-                    if (phaseAllowedTurns.contains(intendedTurn)) {
-                        vehiclesInPhase++;
-                    }
-                }
-            }
-        }
-
-        // Empty intersection
-        if (vehiclesOverall == 0) {
-            phase.setOptimalDuration(phaseBasicDuration);
-            return;
-        }
-
-        double vehicleProportion = (double) vehiclesInPhase / vehiclesOverall;
-        int optimalTime = (int) Math.round(vehicleProportion * cycleBasicDuration);
-        phase.setOptimalDuration(vehiclesInPhase > 0 ? Math.max(1, optimalTime) : 0);
+        return vehiclesCount;
     }
 
 
     @Override
-    protected List<Vehicle> findVehiclesForCurrentPhase(){
+    protected List<Vehicle> findVehiclesForCurrentPhase() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);
 
         List<Vehicle> leftVehicles = new ArrayList<>();
         List<Direction> dirs = currentPhase.getDirections();
-        for(Direction direction : dirs){
+        for (Direction direction : dirs) {
             Queue<Vehicle> queue = roads.get(direction).getVehicles();
 
             if (queue == null || queue.isEmpty()) {
@@ -208,14 +160,14 @@ public class SingleLaneIntersection extends Intersection {
             List<Turn> availableTurns = currentPhase.getTurns(direction);
             Vehicle vehicle = queue.peek();
             Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
-            if(intendedTurn != null && availableTurns.contains(intendedTurn)){
+            if (intendedTurn != null && availableTurns.contains(intendedTurn)) {
 
-                if(intendedTurn == Turn.LEFT && isPrioritized(direction, currentPhase, false)){
+                if (intendedTurn == Turn.LEFT && isPrioritized(direction, currentPhase, false)) {
                     log.info("{} is turning left and is not prioritized", vehicle.id());
                     continue;
                 }
 
-                if(intendedTurn == Turn.RIGHT && isPrioritized(direction, currentPhase, true)){
+                if (intendedTurn == Turn.RIGHT && isPrioritized(direction, currentPhase, true)) {
                     log.info("{} is turning right with conditional arrow and is not prioritized", vehicle.id());
                     continue;
                 }
@@ -225,25 +177,6 @@ public class SingleLaneIntersection extends Intersection {
             }
         }
         return leftVehicles;
-    }
-
-    @Override
-    protected int countPotentialVehiclesForPhase(IntersectionPhase phase) {
-        int potentialCount = 0;
-
-        for (Direction direction : phase.getDirections()) {
-            Queue<Vehicle> queue = roads.get(direction).getVehicles();
-            if (queue == null || queue.isEmpty()) continue;
-
-            Vehicle firstCar = queue.peek();
-            Turn intendedTurn = direction.calculateTurn(firstCar.endRoad());
-            List<Turn> allowedTurns = phase.getTurns(direction);
-
-            if (allowedTurns != null && allowedTurns.contains(intendedTurn)) {
-                potentialCount++;
-            }
-        }
-        return potentialCount;
     }
 
 }

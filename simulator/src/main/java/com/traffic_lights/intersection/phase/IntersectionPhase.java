@@ -5,6 +5,7 @@ import com.traffic_lights.model.Turn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,8 @@ public class IntersectionPhase {
 
     private final Map<Direction, List<Turn>> paths;
     private final int basicDuration;
+
+    @Setter
     private int optimalDuration;
     private int waitingTime;
 

@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class Intersection {
+public abstract class Intersection implements PhaseMetricsProvider {
 
     @Getter
     protected String intersectionType;
@@ -25,13 +25,13 @@ public abstract class Intersection {
 
     protected List<IntersectionPhase> phases;
     protected int currentPhaseIndex;
-    protected IntersectionParameters parameters;
+    protected PhaseScheduler scheduler;
 
 
-    public Intersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
+    public Intersection(String type, List<IntersectionPhase> phases, PhaseScheduler scheduler) {
         this.intersectionType = type;
         this.phases = phases;
-        this.parameters = parameters;
+        this.scheduler = scheduler;
         this.stats = new IntersectionStats();
 
         if (!phases.isEmpty()) {
@@ -51,7 +51,8 @@ public abstract class Intersection {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
 
         resetWaitingTime();
-        setOptimalPhaseTime(currentPhase);
+        int optimalDuration = this.scheduler.calculateOptimalPhaseTime(currentPhase, this, getCycleBasicDuration());
+        currentPhase.setOptimalDuration(optimalDuration);
         activateCurrentPhase();
 
         this.stats.increasePhaseChanges();
@@ -73,20 +74,7 @@ public abstract class Intersection {
 
 
     protected int determineNextPhaseIndex() {
-        int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
-        double maxPriority = -1.0;
-
-        for (int i = 0; i < phases.size(); i++) {
-            if (i == currentPhaseIndex) continue;
-            IntersectionPhase phase = phases.get(currentPhaseIndex);
-            double phasePriority = calculatePhasePriority(phase);
-
-            if (phasePriority > maxPriority) {
-                maxPriority = phasePriority;
-                bestPhaseIndex = i;
-            }
-        }
-        return bestPhaseIndex;
+        return scheduler.determineNextPhaseIndex(phases, currentPhaseIndex, this);
     }
 
     private void increaseWaitingTime() {
@@ -95,7 +83,7 @@ public abstract class Intersection {
                 continue;
             }
 
-            if(isAnyVehicleWaiting(phase)){
+            if(getVehiclesForPhase(phase) > 0){
                 phase.increaseWaitingTime();
             }
         }
@@ -106,6 +94,7 @@ public abstract class Intersection {
         int nextPhaseIndex = determineNextPhaseIndex();
         switchToPhase(nextPhaseIndex);
     }
+
 
 
     public List<String> processStep() {
@@ -136,12 +125,17 @@ public abstract class Intersection {
         return leftVehicles.stream().map(Vehicle::id).toList();
     }
 
-    protected abstract void setOptimalPhaseTime(IntersectionPhase phase);
+    @Override
+    public abstract int getVehiclesForPhase(IntersectionPhase phase);
+
+    @Override
+    public abstract int getVehiclesOverall();
+
+//    protected abstract void setOptimalPhaseTime(IntersectionPhase phase);
     public abstract void addVehicleToQueue(Vehicle vehicle);
     protected abstract boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow);
     protected abstract List<Vehicle> findVehiclesForCurrentPhase();
-    protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
-    protected abstract boolean isAnyVehicleWaiting(IntersectionPhase phase);
+//    protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
+//    protected abstract boolean isAnyVehicleWaiting(IntersectionPhase phase);
     protected abstract void activateCurrentPhase();
-    protected abstract double calculatePhasePriority(IntersectionPhase phase);
 }

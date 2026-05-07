@@ -32,6 +32,10 @@ class IntersectionSimulatorTest {
 
         String fakeConfigJson = """
                         {
+                           "intersectionParameters": {
+                              "weightQueue": 1.0,
+                               "weightWaitTime": 2.0
+                           },
                           "intersectionTypes": {
                             "STANDARD": {
                               "roads": {

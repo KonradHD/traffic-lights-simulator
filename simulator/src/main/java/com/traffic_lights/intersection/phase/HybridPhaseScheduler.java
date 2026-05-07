@@ -19,12 +19,8 @@ public class HybridPhaseScheduler implements PhaseScheduler {
 
         for (int i = 0; i < phases.size(); i++) {
             if (i == currentPhaseIndex) continue;
-
-            IntersectionPhase phase = phases.get(i);
-
-            int vehiclesWaiting = metricsProvider.getVehiclesForPhase(phase);
-            int waitTime = metricsProvider.getMaxWaitTimeForPhase(phase);
-            double phasePriority = (vehiclesWaiting * weightQueue) + (waitTime * weightWaitTime);
+            IntersectionPhase phase = phases.get(currentPhaseIndex);
+            double phasePriority = calculatePhasePriority(phase, metricsProvider);
 
             if (phasePriority > maxPriority) {
                 maxPriority = phasePriority;
@@ -34,20 +30,28 @@ public class HybridPhaseScheduler implements PhaseScheduler {
         return bestPhaseIndex;
     }
 
+
+
     @Override
     public int calculateOptimalPhaseTime(IntersectionPhase phase, PhaseMetricsProvider metricsProvider, int cycleBasicDuration) {
         int vehiclesInPhase = metricsProvider.getVehiclesForPhase(phase);
         int vehiclesOverall = metricsProvider.getVehiclesOverall();
 
-        // Zabezpieczenie przed pustym skrzyżowaniem
         if (vehiclesOverall == 0) {
             return phase.getBasicDuration();
         }
 
-        // Algorytm Proporcjonalny
         double vehicleProportion = (double) vehiclesInPhase / vehiclesOverall;
         int optimalTime = (int) Math.round(vehicleProportion * cycleBasicDuration);
 
         return vehiclesInPhase > 0 ? Math.max(1, optimalTime) : 0;
     }
+
+
+    public double calculatePhasePriority(IntersectionPhase phase, PhaseMetricsProvider metricsProvider) {
+        int vehiclesCount = metricsProvider.getVehiclesForPhase(phase);
+        int waitingTime = phase.getWaitingTime();
+        return (this.weightQueue * vehiclesCount) + (this.weightWaitTime * waitingTime);
+    }
+
 }

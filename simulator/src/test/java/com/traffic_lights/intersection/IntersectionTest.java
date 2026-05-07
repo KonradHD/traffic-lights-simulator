@@ -2,7 +2,9 @@ package com.traffic_lights.intersection;
 
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.intersection.IntersectionParameters;
+import com.traffic_lights.intersection.phase.HybridPhaseScheduler;
 import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.intersection.phase.PhaseScheduler;
 import com.traffic_lights.model.Vehicle;
 import com.traffic_lights.model.Direction;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +31,7 @@ class IntersectionTest {
             new IntersectionPhase(Map.of(), 5, 5, 0),
             new IntersectionPhase(Map.of(), 5, 5, 0),
             new IntersectionPhase(Map.of(), 5, 5, 0));
-    private final IntersectionParameters dummyParams = new IntersectionParameters(2, 2);
+    private final PhaseScheduler dummyScheduler = new HybridPhaseScheduler(2, 2);
 
 
     static class TestableIntersection extends Intersection {
@@ -38,8 +40,8 @@ class IntersectionTest {
         List<Vehicle> vehiclesToReturn = new ArrayList<>();
         Map<Integer, Integer> potentialVehiclesPerPhaseIndex = new HashMap<>();
 
-        public TestableIntersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
-            super(type, phases, parameters);
+        public TestableIntersection(String type, List<IntersectionPhase> phases, PhaseScheduler scheduler) {
+            super(type, phases, scheduler);
         }
 
         @Override
@@ -56,11 +58,6 @@ class IntersectionTest {
             return true;
         }
 
-        @Override
-        protected void setOptimalPhaseTime(IntersectionPhase phase){
-            int optimalTime = phase.getBasicDuration();
-            phase.setOptimalDuration(optimalTime);
-        }
 
         @Override
         protected List<Vehicle> findVehiclesForCurrentPhase() {
@@ -68,24 +65,20 @@ class IntersectionTest {
         }
 
         @Override
-        protected int countPotentialVehiclesForPhase(IntersectionPhase phase) {
+        public int getVehiclesForPhase(IntersectionPhase phase){
             int index = phases.indexOf(phase);
             return potentialVehiclesPerPhaseIndex.getOrDefault(index, 0);
         }
 
         @Override
-        public boolean isAnyVehicleWaiting(IntersectionPhase phase) {
-            int index = phases.indexOf(phase);
-            return potentialVehiclesPerPhaseIndex.getOrDefault(index, 0) != 0;
+        public int getVehiclesOverall(){
+            int sum = 0;
+            for(Map.Entry<Integer, Integer> entry : potentialVehiclesPerPhaseIndex.entrySet()){
+                sum += entry.getValue();
+            }
+            return sum;
         }
 
-        @Override
-        protected double calculatePhasePriority(IntersectionPhase phase){
-            int waitingTime = phase.getWaitingTime();
-            int index = phases.indexOf(phase);
-            int vehiclesCount = potentialVehiclesPerPhaseIndex.getOrDefault(index, 0);
-            return (this.parameters.weightQueue() * vehiclesCount) + (this.parameters.weightWaitTime() * waitingTime);
-        }
     }
 
 
@@ -128,7 +121,7 @@ class IntersectionTest {
 
     @Test
     void shouldOptimizePhase() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyScheduler);
         intersection.switchToPhase(0);
 
         intersection.potentialVehiclesPerPhaseIndex.put(0, 0);
@@ -143,7 +136,7 @@ class IntersectionTest {
 
     @Test
     void shouldNotOptimizePhase() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyScheduler);
         intersection.switchToPhase(1);
 
         intersection.potentialVehiclesPerPhaseIndex.put(0, 0);
@@ -159,7 +152,7 @@ class IntersectionTest {
     @Test
     void shouldForceNextPhaseWhenBasicDurationIsReached() {
         // Given
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyScheduler);
         intersection.switchToPhase(0);
 
         intersection.getStats().increasePhaseDuration();
@@ -175,7 +168,7 @@ class IntersectionTest {
 
     @Test
     void shouldUpdateStatsDuringProcessStep() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyScheduler);
         intersection.switchToPhase(0);
         intersection.vehiclesToReturn = List.of(
                 new Vehicle("vehicle1", Direction.EAST, Direction.SOUTH),

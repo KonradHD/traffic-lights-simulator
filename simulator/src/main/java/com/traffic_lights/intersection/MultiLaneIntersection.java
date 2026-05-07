@@ -2,6 +2,7 @@ package com.traffic_lights.intersection;
 
 import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.intersection.phase.PhaseScheduler;
 import com.traffic_lights.model.Direction;
 import com.traffic_lights.model.Lane;
 import com.traffic_lights.model.Turn;
@@ -19,8 +20,8 @@ public class MultiLaneIntersection extends Intersection {
     private final Map<Direction, List<Lane>> roads = new HashMap<>();
 
 
-    public MultiLaneIntersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
-        super(type, phases, parameters);
+    public MultiLaneIntersection(String type, List<IntersectionPhase> phases, PhaseScheduler scheduler) {
+        super(type, phases, scheduler);
         initLanes(type);
         activateCurrentPhase();
 
@@ -127,88 +128,10 @@ public class MultiLaneIntersection extends Intersection {
         return false;
     }
 
-    @Override
-    protected void setOptimalPhaseTime(IntersectionPhase phase) {
-        int vehiclesInPhase = 0;
-        int vehiclesOverall = 0;
-        int cycleBasicDuration = getCycleBasicDuration();
-        int phaseBasicDuration = phase.getBasicDuration();
-
-        for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
-            Direction dir = entry.getKey();
-            List<Lane> lanes = entry.getValue();
-            if (lanes == null || lanes.isEmpty()) {
-                continue;
-            }
-
-            List<Turn> phaseAllowedTurns = phase.getTurns(dir);
-
-            for (Lane lane : lanes) {
-                Queue<Vehicle> queue = lane.getVehicles();
-                if (queue == null || queue.isEmpty()) {
-                    continue;
-                }
-
-                vehiclesOverall += queue.size();
-
-                if (phaseAllowedTurns != null && !phaseAllowedTurns.isEmpty()) {
-                    for (Vehicle vehicle : queue) {
-                        Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
-                        if (phaseAllowedTurns.contains(intendedTurn)) {
-                            vehiclesInPhase++;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Empty intersection
-        if (vehiclesOverall == 0) {
-            phase.setOptimalDuration(phaseBasicDuration);
-            return;
-        }
-
-        double vehicleProportion = (double) vehiclesInPhase / vehiclesOverall;
-        int optimalTime = (int) Math.round(vehicleProportion * cycleBasicDuration);
-        phase.setOptimalDuration(vehiclesInPhase > 0 ? Math.max(1, optimalTime) : 0);
-    }
 
     @Override
-    protected boolean isAnyVehicleWaiting(IntersectionPhase phase){
-        for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
-            Direction dir = entry.getKey();
-            List<Lane> lanes = entry.getValue();
-
-            if (lanes == null || lanes.isEmpty()) {
-                continue;
-            }
-
-            List<Turn> allowedTurns = phase.getTurns(dir);
-
-            if (allowedTurns != null && !allowedTurns.isEmpty()) {
-                for (Lane lane : lanes) {
-                    Queue<Vehicle> queue = lane.getVehicles();
-                    if (queue == null || queue.isEmpty()) {
-                        continue;
-                    }
-
-                    for (Vehicle vehicle : queue) {
-                        Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
-                        if (allowedTurns.contains(intendedTurn)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-
-    @Override
-    protected double calculatePhasePriority(IntersectionPhase phase) {
+    public int getVehiclesForPhase(IntersectionPhase phase){
         int vehiclesCount = 0;
-        int waitingTime = phase.getWaitingTime();
 
         for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
             Direction dir = entry.getKey();
@@ -238,7 +161,30 @@ public class MultiLaneIntersection extends Intersection {
                 }
             }
         }
-        return (this.parameters.weightQueue() * vehiclesCount) + (this.parameters.weightWaitTime() * waitingTime);
+        return vehiclesCount;
+    }
+
+    @Override
+    public int getVehiclesOverall(){
+        int vehiclesOverall = 0;
+
+        for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
+            Direction dir = entry.getKey();
+            List<Lane> lanes = entry.getValue();
+            if (lanes == null || lanes.isEmpty()) {
+                continue;
+            }
+
+            for (Lane lane : lanes) {
+                Queue<Vehicle> queue = lane.getVehicles();
+                if (queue == null || queue.isEmpty()) {
+                    continue;
+                }
+
+                vehiclesOverall += queue.size();
+            }
+        }
+        return vehiclesOverall;
     }
 
 
@@ -287,41 +233,5 @@ public class MultiLaneIntersection extends Intersection {
             }
         }
         return leftVehicles;
-    }
-
-    @Override
-    protected int countPotentialVehiclesForPhase(IntersectionPhase phase) {
-        int potentialCount = 0;
-
-        for (Direction direction : phase.getDirections()) {
-            List<Lane> lanes = roads.get(direction);
-            if (lanes == null || lanes.isEmpty()) continue;
-
-            List<Turn> allowedTurns = phase.getTurns(direction);
-            if (allowedTurns == null || allowedTurns.isEmpty()) continue;
-
-            for (Lane lane : lanes) {
-                Queue<Vehicle> queue = lane.getVehicles();
-                if (queue.isEmpty()) continue;
-
-                Vehicle firstCar = queue.peek();
-                Turn intendedTurn = direction.calculateTurn(firstCar.endRoad());
-
-                if (allowedTurns.contains(intendedTurn)) {
-                    boolean canActuallyGo = true;
-
-                    if (intendedTurn == Turn.LEFT && isPrioritized(direction, phase, false)) {
-                        canActuallyGo = false;
-                    } else if (intendedTurn == Turn.RIGHT && isPrioritized(direction, phase, true)) {
-                        canActuallyGo = false;
-                    }
-
-                    if (canActuallyGo) {
-                        potentialCount++;
-                    }
-                }
-            }
-        }
-        return potentialCount;
     }
 }
