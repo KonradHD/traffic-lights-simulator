@@ -23,5 +23,6 @@ jobs:
           cache: maven
 
       - name: Build and test using Maven
+        working-directory: ./simulator
         run: mvn clean verify -B
 
