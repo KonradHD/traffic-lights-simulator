@@ -18,7 +18,7 @@ public class IntersectionStats {
         this.phaseChanges++;
     }
 
-    public void increaseStepsWithoutChange() {
+    public void increasePhaseDuration() {
         this.phaseDuration++;
     }
 
@@ -37,6 +37,8 @@ public class IntersectionStats {
     public void increaseVehiclesWaitingNumber() {
         this.vehiclesWaitingNumber++;
     }
+
+    public void addWaitingVehicles(int count){ this.vehiclesWaitingNumber += count; }
 
     public void removeWaitingVehicles(int count) {
         this.vehiclesWaitingNumber -= count;

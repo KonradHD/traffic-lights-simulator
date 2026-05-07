@@ -146,6 +146,7 @@ public class MultiLaneIntersection extends Intersection {
 
             for (Lane lane : lanes) {
                 Queue<Vehicle> queue = lane.getVehicles();
+                log.info("Car on lanes, direction: {}, lane allowed turns: {}, cars: {}", direction, lane.getAvailableTurns(), queue.size());
                 if (queue.isEmpty()) {
                     continue;
                 }
@@ -169,6 +170,7 @@ public class MultiLaneIntersection extends Intersection {
                 }
             }
         }
+        log.info("Left vehicles: {}", leftVehicles.toString());
         return leftVehicles;
     }
 

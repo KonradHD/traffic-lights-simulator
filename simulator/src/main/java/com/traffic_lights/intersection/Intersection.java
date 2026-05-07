@@ -96,7 +96,6 @@ public abstract class Intersection {
 
             IntersectionPhase evaluatedPhase = phases.get(newPhaseIndex % phases.size());
             int potentialVehicles = countPotentialVehiclesForPhase(evaluatedPhase);
-
             if (potentialVehicles > maxVehiclesToLeave) {
                 maxVehiclesToLeave = potentialVehicles;
                 bestPhase = evaluatedPhase;
@@ -126,7 +125,7 @@ public abstract class Intersection {
                 leftVehicles = findVehiclesForCurrentPhase();
             }
         }else{
-            this.stats.increaseStepsWithoutChange();
+            this.stats.increasePhaseDuration();
         }
 
         this.stats.increaseStepsNumber();
