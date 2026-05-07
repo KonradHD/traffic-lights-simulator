@@ -14,6 +14,12 @@ public record SimulationOutput(
         stepStatuses.add(dto);
     }
 
+    public List<String> getLeftVehiclesIds(){
+        List<String> allVehiclesIds = new ArrayList<>();
+        stepStatuses.forEach(step -> allVehiclesIds.addAll(step.leftVehicles()));
+        return allVehiclesIds;
+    }
+
     public static SimulationOutput createEmptySimOutput(){
         return new SimulationOutput(new ArrayList<>());
     }

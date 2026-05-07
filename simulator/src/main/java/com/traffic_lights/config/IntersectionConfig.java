@@ -10,11 +10,16 @@ import java.io.File;
 
 @Slf4j
 public class IntersectionConfig {
-    private static final String path = "data/config/intersection_config.json";
+    private static String path = "data/config/intersection_config.json";
     private static RoadsConfiguration configuration;
     private static final ObjectMapper mapper = JsonMapper.builder()
                         .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
                         .build();
+
+
+    public static void setConfigPath(String newPath) {
+        path = newPath;
+    }
 
     public static void loadConfig() {
         try {

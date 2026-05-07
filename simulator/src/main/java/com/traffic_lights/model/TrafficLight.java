@@ -19,7 +19,7 @@ public class TrafficLight {
     private final LightType lightType;
 
     public void nextLight(){
-        lightState.nextState();
+        lightState = lightState.nextState();
     }
 
     public List<Turn> greenLightTurns() {

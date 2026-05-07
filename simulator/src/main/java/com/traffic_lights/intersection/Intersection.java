@@ -1,14 +1,14 @@
 package com.traffic_lights.intersection;
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-
-import com.traffic_lights.model.*;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.IntersectionLayout;
+import com.traffic_lights.model.Direction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public abstract class Intersection {
@@ -26,10 +26,12 @@ public abstract class Intersection {
     public Intersection(String type) {
         initIntersectionConfig(type);
 
-        int randomMax = phases.size();
-        int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
-        this.currentPhaseIndex = randomIndex;
-        log.info("Selected random starting phase index: {}", randomIndex);
+        if(!phases.isEmpty()){
+            int randomMax = phases.size();
+            int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
+            this.currentPhaseIndex = randomIndex;
+            log.info("Selected random starting phase index: {}", randomIndex);
+        }
 
         stats = new IntersectionStats(0, 0, 0, 0, 0);
     }

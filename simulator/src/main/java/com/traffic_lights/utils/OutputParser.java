@@ -1,4 +1,4 @@
-package com.traffic_lights.parsing;
+package com.traffic_lights.utils;
 
 import java.io.File;
 import java.time.Instant;

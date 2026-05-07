@@ -5,8 +5,8 @@ import java.io.IOException;
 import com.traffic_lights.dto.SimulationInput;
 import com.traffic_lights.dto.SimulationOutput;
 import com.traffic_lights.engine.IntersectionSimulator;
-import com.traffic_lights.parsing.InputParser;
-import com.traffic_lights.parsing.OutputParser;
+import com.traffic_lights.utils.InputParser;
+import com.traffic_lights.utils.OutputParser;
 
 import lombok.extern.slf4j.Slf4j;
 

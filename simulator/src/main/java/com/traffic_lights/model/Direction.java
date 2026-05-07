@@ -62,7 +62,7 @@ public enum Direction {
     public Turn calculateTurn(Direction end) {
         // TODO: adding turning around
         if (this == end) {
-            throw new IllegalArgumentException("Start and end direction cannot be the same!");
+            throw new IllegalArgumentException("Start and end direction cannot be the same");
         }
 
         return switch (this) {
