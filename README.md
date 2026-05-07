@@ -2,19 +2,18 @@
 
 Symulator świateł drogowych mający za zadanie przetestować działanie różnych typów skrzyżowań z sygnalizacją świetlną i porównywać ich wydajność, a także ułatwia dopasowanie parametrów algorytmu optymalizacyjnego przepływ samochodowy na wybranych skrzyżowaniach.
 
-## Działanie symulacji
 
-### Struktura 
+## Struktura symulacji
 
 
 Struktura symulacji jest ściśle związana z wymaganiami dotyczącymi jej działania. Architektura silnika symulatora została zaprojektowana w oparciu o podejście **data-driven**. Wejściem do systemu jest plik JSON zawierający sekwencyjną listę komend.
 
-#### Start symulacji
+### Start systemu
 
 Kluczowym elementem mechanizmu wczytywania jest **polimorficzna deserializacja**. System automatycznie mapuje poszczególne komendy z pliku na instancje odpowiednich komend - `AddVehicleCommand` oraz `StepCommand` na podstawie deklaracji typu. Dzięki temu pozbywamy się rozbudowanych drabinek if-else oraz takie podejście ułatwia rozszerzanie funkcjonalności systemu o kolejne komendy, zgodnie z kluczową zasadą **Open/Closed Principle** z zestawu ***SOLID***. 
 
 
-#### Model Domenowy
+### Model Domenowy
 
 Stan i fizyczna struktura skrzyżowania zostały zamodelowane z naciskiem na precyzyjne odzwierciedlenie rzeczywistości. Pakiet `model` dzieli się na dwie główne odpowiedzialności:
 
@@ -22,7 +21,7 @@ Stan i fizyczna struktura skrzyżowania zostały zamodelowane z naciskiem na pre
 * **Sygnalizacja Świetlna:** reprezentowana przez klasę `TrafficLight`, której zachowanie determinują enumy `LightState` (RED, GREEN, ORANGE, NONFUNCIONAL), `LightType` (GENERAL, DIRECTIONAL, CONDITIONAL) oraz `TurnGroup`, który reprezentuje wszystkie możliwe kombinacje dozwolonych skrętów. Rozdzielenie typu światła od jego obecnego stanu pozwala na łatwe symulowanie m.in. sygnalizatorów ze strzałkami warunkowymi bez komplikowania głównej logiki
 
 
-#### Logika skrzyżowań 
+### Logika skrzyżowań 
 
 Pakiet `intersection` stanowi główny silnik decyzyjny symulatora. Został on zaprojektowany w oparciu o mechanizmy obiektowe, ze szczególnym uwzględnieniem **polimorfizmu** oraz izolacji odpowiedzialności:
 
@@ -30,7 +29,8 @@ Pakiet `intersection` stanowi główny silnik decyzyjny symulatora. Został on z
 * **Sterowanie Fazowe:** przepływ ruchu kontrolowany jest przez obiekty `IntersectionPhase`, które określają macierz dozwolonych manewrów w danym cyklu świateł. To one są podstawą dla zaimplementowanych algorytmów adaptacyjnych (Smart Round Robin, System Punktowy), pozwalających na dynamiczne wyliczanie priorytetów faz i optymalnego czasu ich trwania
 * **Separacja statystyk:** cała logika związana ze zbieraniem metryk (czas trwania faz, liczba obsłużonych pojazdów, czasy oczekiwania) została wydzielona do dedykowanej klasy `IntersectionStats`. Taki zabieg odciąża główną klasę skrzyżowania z zadań raportowych, gwarantując czysty kod (Clean Code) i łatwość w generowaniu pliku wyjściowego `output.json`
 * **Zaproponowane rodzaje:** w pliku `data/config/intersection_config.json`
-#### Data Transfer Object
+
+### Data Transfer Object
 
 Pakiet `dto` pełni rolę ścisłej pośrednika między plikami JSON z gotową konfiguracją lub danymi wejściowymi a wewnętrzną logiką symulatora. Takie rozdzielenie warstw chroni działanie symulacji przed zmianami w danych wejściowych oraz wyjściowych.
 
@@ -38,7 +38,7 @@ Pakiet `dto` pełni rolę ścisłej pośrednika między plikami JSON z gotową k
 * **Czyste mapowanie Input/Output:** pakiet zawiera precyzyjne odzwierciedlenie struktur plików konfiguracyjnych. Klasy główne, takie jak `SimulationInput` oraz `SimulationOutput`, mapują się na zadany w poleceiu format JSON, co sprawia, że proces serializacji i deserializacji jest przejrzysty i bezbłędny
 * **Hermetyzacja konfiguracji:** wyodrębniony subpakiet `intersection` logicznie grupuje parametry konfiguracyjne dotyczące skrzyżowań - jego typu, rozróżnienia faz oraz wartości parametrów optymalizacyjnych 
 
-#### Narzędzia pomocnicze
+### Narzędzia pomocnicze
 
 Aby zachować pełną zgodność z zasadą pojedynczej odpowiedzialności, z głównego silnika symulacji wydzielono wszelkie narzędzia techniczne takie jak:
 

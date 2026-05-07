@@ -1,8 +1,9 @@
 package com.traffic_lights.intersection;
 
-import com.traffic_lights.config.IntersectionConfig;
-import com.traffic_lights.dto.Vehicle;
-import com.traffic_lights.dto.intersection.IntersectionLayout;
+import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.intersection.phase.PhaseMetricsProvider;
+import com.traffic_lights.intersection.phase.PhaseScheduler;
+import com.traffic_lights.model.Vehicle;
 import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.model.Direction;
 import lombok.Getter;
@@ -27,68 +28,36 @@ public abstract class Intersection {
     protected IntersectionParameters parameters;
 
 
-    public Intersection(String type) {
-        initIntersectionConfig(type);
+    public Intersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
+        this.intersectionType = type;
+        this.phases = phases;
+        this.parameters = parameters;
+        this.stats = new IntersectionStats();
 
-        if(!phases.isEmpty()){
-            int randomMax = phases.size();
-            int randomIndex = ThreadLocalRandom.current().nextInt(randomMax);
-            this.currentPhaseIndex = randomIndex;
-            log.info("Selected random starting phase index: {}", randomIndex);
+        if (!phases.isEmpty()) {
+            this.currentPhaseIndex = ThreadLocalRandom.current().nextInt(phases.size());
+            log.info("Selected random starting phase index: {}", this.currentPhaseIndex);
         }
-
-        stats = new IntersectionStats();
     }
 
-    private void initIntersectionConfig(String type){
-        IntersectionConfig.loadConfig();
-        IntersectionLayout layoutTemplate = IntersectionConfig.getLayoutForType(type.toUpperCase());
-
-        phases = layoutTemplate
-                .phases()
-                .stream()
-                .map(dto -> new IntersectionPhase(dto.paths(), dto.basicDuration(), dto.basicDuration(), 0))
-                .toList();
-        parameters = IntersectionConfig.getParameters();
-    }
-
-
-    protected abstract void activateCurrentPhase();
-
-
-    protected void switchToNextPhase() {
-        currentPhaseIndex++;
-        if (currentPhaseIndex >= phases.size()) {
-            currentPhaseIndex = 0;
-        }
-        resetWaitingTime();
-        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
-        setOptimalPhaseTime(currentPhase);
-
-        this.stats.resetPhaseDuration();
-        this.stats.increasePhaseChanges();
-        activateCurrentPhase();
-        log.info("Switched to the next intersection phase: {}", this.currentPhaseIndex);
-    }
 
     protected void switchToPhase(int index) {
-        if (index >= phases.size()) {
-            log.warn("Trying to switch to the non existence phase");
+        if (index >= phases.size() || index == currentPhaseIndex) {
+            log.warn("Invalid phase switch attempt to index: {}", index);
             return;
         }
 
         this.currentPhaseIndex = index;
-        resetWaitingTime();
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+
+        resetWaitingTime();
         setOptimalPhaseTime(currentPhase);
+        activateCurrentPhase();
 
         this.stats.increasePhaseChanges();
         this.stats.resetPhaseDuration();
-        activateCurrentPhase();
         log.info("Switched to the intersection phase: {}", this.currentPhaseIndex);
     }
-
-    protected abstract void setOptimalPhaseTime(IntersectionPhase phase);
 
     protected int getCycleBasicDuration() {
         return phases.stream()
@@ -102,57 +71,6 @@ public abstract class Intersection {
         }
     }
 
-    public abstract void addVehicleToQueue(Vehicle vehicle);
-
-    protected abstract boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow);
-
-    protected abstract List<Vehicle> findVehiclesForCurrentPhase();
-
-    protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
-
-    protected abstract boolean isAnyVehicleWaiting(IntersectionPhase phase);
-
-    protected boolean optimizeCurrentPhase() {
-        log.info("Optimizing vehicles flow...");
-
-        int maxVehiclesToLeave = 0;
-        IntersectionPhase bestPhase = null;
-        int newPhaseIndex = currentPhaseIndex + 1;
-
-        while(newPhaseIndex % phases.size() != currentPhaseIndex){
-
-            IntersectionPhase evaluatedPhase = phases.get(newPhaseIndex % phases.size());
-            int potentialVehicles = countPotentialVehiclesForPhase(evaluatedPhase);
-            if (potentialVehicles > maxVehiclesToLeave) {
-                maxVehiclesToLeave = potentialVehicles;
-                bestPhase = evaluatedPhase;
-            }
-            newPhaseIndex++;
-        }
-
-        if (phases.indexOf(bestPhase) != currentPhaseIndex && maxVehiclesToLeave > 0) {
-            switchToPhase(phases.indexOf(bestPhase));
-            return true;
-        }
-        return false;
-    }
-
-    /*protected int determineNextPhaseIndex() {
-        int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
-        int maxVehicles = 0;
-
-        for (int i = 0; i < phases.size(); i++) {
-            if (i == currentPhaseIndex) continue;
-            int potentialVehicles = countPotentialVehiclesForPhase(phases.get(i));
-
-            if (potentialVehicles > maxVehicles) {
-                maxVehicles = potentialVehicles;
-                bestPhaseIndex = i;
-            }
-        }
-
-        return bestPhaseIndex;
-    }*/
 
     protected int determineNextPhaseIndex() {
         int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
@@ -183,45 +101,47 @@ public abstract class Intersection {
         }
     }
 
-    protected abstract double calculatePhasePriority(IntersectionPhase phase);
+
+    private void performPhaseSwitch() {
+        int nextPhaseIndex = determineNextPhaseIndex();
+        switchToPhase(nextPhaseIndex);
+    }
 
 
     public List<String> processStep() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
-        this.stats.increasePhaseDuration();
-        increaseWaitingTime();
-
         if (this.stats.getPhaseDuration() >= currentPhase.getOptimalDuration()) {
-            int nextPhaseIndex = determineNextPhaseIndex();
-            switchToPhase(nextPhaseIndex);
-            currentPhase = phases.get(currentPhaseIndex);
-            setOptimalPhaseTime(currentPhase);
+            performPhaseSwitch();
         }
 
         List<Vehicle> leftVehicles = findVehiclesForCurrentPhase();
 
         if (leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0) {
-            int nextPhaseIndex = determineNextPhaseIndex();
-            switchToPhase(nextPhaseIndex);
-            currentPhase = phases.get(currentPhaseIndex);
-            setOptimalPhaseTime(currentPhase);
+            performPhaseSwitch();
             leftVehicles = findVehiclesForCurrentPhase();
         }
 
+        this.stats.increasePhaseDuration();
         this.stats.increaseStepsNumber();
+        increaseWaitingTime();
         this.stats.addVehiclesLeft(leftVehicles.size());
 
         Map<Direction, Long> vehiclesByDirection = leftVehicles.stream()
                 .collect(Collectors.groupingBy(Vehicle::startRoad, Collectors.counting()));
 
         for (Map.Entry<Direction, Long> entry : vehiclesByDirection.entrySet()) {
-            Direction direction = entry.getKey();
-            int amount = entry.getValue().intValue();
-
-            this.stats.removeWaitingVehicles(direction, amount);
+            this.stats.removeWaitingVehicles(entry.getKey(), entry.getValue().intValue());
         }
 
         return leftVehicles.stream().map(Vehicle::id).toList();
     }
 
+    protected abstract void setOptimalPhaseTime(IntersectionPhase phase);
+    public abstract void addVehicleToQueue(Vehicle vehicle);
+    protected abstract boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow);
+    protected abstract List<Vehicle> findVehiclesForCurrentPhase();
+    protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
+    protected abstract boolean isAnyVehicleWaiting(IntersectionPhase phase);
+    protected abstract void activateCurrentPhase();
+    protected abstract double calculatePhasePriority(IntersectionPhase phase);
 }

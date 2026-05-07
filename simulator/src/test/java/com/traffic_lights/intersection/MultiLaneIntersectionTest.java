@@ -2,7 +2,9 @@ package com.traffic_lights.intersection;
 
 
 import com.traffic_lights.config.IntersectionConfig;
-import com.traffic_lights.dto.Vehicle;
+import com.traffic_lights.dto.intersection.IntersectionParameters;
+import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.model.Vehicle;
 import com.traffic_lights.model.Direction;
 import com.traffic_lights.model.Lane;
 import com.traffic_lights.model.Turn;
@@ -23,6 +25,11 @@ class MultiLaneIntersectionTest {
     private static final String TEST_DIR = "data/test_config/";
     private static final String TEST_CONFIG_FILE = TEST_DIR + "multi_lane_config.json";
     private static final String INTERSECTION_TYPE = "TEST_MULTI_LANE";
+    private final List<IntersectionPhase> dummyPhases = List.of(
+            new IntersectionPhase(Map.of(), 5, 5, 0),
+            new IntersectionPhase(Map.of(), 5, 5, 0),
+            new IntersectionPhase(Map.of(), 5, 5, 0));
+    private final IntersectionParameters dummyParams = new IntersectionParameters(2, 2);
 
     @BeforeEach
     void setUp() throws Exception {
@@ -78,7 +85,7 @@ class MultiLaneIntersectionTest {
 
     @Test
     void shouldInitializeMultipleLanesCorrectly() throws Exception {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
+        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         Map<Direction, List<Lane>> roads = getRoads(intersection);
 
         assertTrue(roads.containsKey(Direction.NORTH));
@@ -91,7 +98,7 @@ class MultiLaneIntersectionTest {
 
     @Test
     void shouldDistributeVehiclesToLanesWithShortestQueue() throws Exception {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
+        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
 
         Vehicle v1 = new Vehicle("vehicle1", Direction.NORTH, Direction.SOUTH);
         Vehicle v2 = new Vehicle("vehicle1", Direction.NORTH, Direction.SOUTH);
@@ -111,7 +118,7 @@ class MultiLaneIntersectionTest {
 
     @Test
     void shouldAddVehicleToSpecificLane() throws Exception {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
+        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         Vehicle turningLeftCar = new Vehicle("CAR_LEFT", Direction.NORTH, Direction.EAST);
 
         intersection.addVehicleToQueue(turningLeftCar);
@@ -123,7 +130,7 @@ class MultiLaneIntersectionTest {
 
     @Test
     void shouldThrowExceptionWhenNoLaneSupportsIntendedTurn() {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
+        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         Vehicle illegalTurnCar = new Vehicle("CAR_BAD", Direction.SOUTH, Direction.WEST);
 
         IllegalStateException exception = assertThrows(
@@ -135,7 +142,7 @@ class MultiLaneIntersectionTest {
 
     @Test
     void shouldLetVehiclesPass() {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
+        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         intersection.switchToPhase(0);
         Vehicle vehicle1 = new Vehicle("vehicle_north1", Direction.NORTH, Direction.SOUTH);
         Vehicle vehicle2 = new Vehicle("vehicle_north2", Direction.NORTH, Direction.WEST);
@@ -156,7 +163,7 @@ class MultiLaneIntersectionTest {
 
     @Test
     void shouldYieldPriorityAcrossMultipleLanes() {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE);
+        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         intersection.switchToPhase(0);
         Vehicle vehicle1 = new Vehicle("vehicle_left", Direction.NORTH, Direction.EAST);
         Vehicle vehicle2 = new Vehicle("vehicle_straight", Direction.SOUTH, Direction.NORTH);

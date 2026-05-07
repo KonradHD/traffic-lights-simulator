@@ -1,7 +1,9 @@
 package com.traffic_lights.intersection;
 
 import com.traffic_lights.config.IntersectionConfig;
-import com.traffic_lights.dto.Vehicle;
+import com.traffic_lights.dto.intersection.IntersectionParameters;
+import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.model.Vehicle;
 import com.traffic_lights.model.Direction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,11 @@ class IntersectionTest {
 
     private static final String TEST_DIR = "data/test_config/";
     private static final String TEST_CONFIG_FILE = TEST_DIR + "intersection_config.json";
+    private final List<IntersectionPhase> dummyPhases = List.of(
+            new IntersectionPhase(Map.of(), 5, 5, 0),
+            new IntersectionPhase(Map.of(), 5, 5, 0),
+            new IntersectionPhase(Map.of(), 5, 5, 0));
+    private final IntersectionParameters dummyParams = new IntersectionParameters(2, 2);
 
 
     static class TestableIntersection extends Intersection {
@@ -31,8 +38,8 @@ class IntersectionTest {
         List<Vehicle> vehiclesToReturn = new ArrayList<>();
         Map<Integer, Integer> potentialVehiclesPerPhaseIndex = new HashMap<>();
 
-        public TestableIntersection(String type) {
-            super(type);
+        public TestableIntersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
+            super(type, phases, parameters);
         }
 
         @Override
@@ -118,55 +125,41 @@ class IntersectionTest {
     }
 
 
-    @Test
-    void shouldSwitchToNextPhase() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
-        intersection.switchToPhase(1);
-
-        intersection.switchToNextPhase();
-
-        assertEquals(2, intersection.currentPhaseIndex);
-        assertEquals(0, intersection.getStats().getPhaseDuration());
-        assertTrue(intersection.wasActivateCalled);
-
-        intersection.switchToNextPhase();
-        assertEquals(0, intersection.currentPhaseIndex);
-    }
 
     @Test
     void shouldOptimizePhase() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
         intersection.switchToPhase(0);
 
         intersection.potentialVehiclesPerPhaseIndex.put(0, 0);
         intersection.potentialVehiclesPerPhaseIndex.put(1, 2);
         intersection.potentialVehiclesPerPhaseIndex.put(2, 5);
 
-        boolean wasOptimized = intersection.optimizeCurrentPhase();
+        int index = intersection.determineNextPhaseIndex();
+        intersection.switchToPhase(index);
 
-        assertTrue(wasOptimized);
         assertEquals(2, intersection.currentPhaseIndex);
     }
 
     @Test
     void shouldNotOptimizePhase() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
         intersection.switchToPhase(1);
 
         intersection.potentialVehiclesPerPhaseIndex.put(0, 0);
         intersection.potentialVehiclesPerPhaseIndex.put(1, 0);
         intersection.potentialVehiclesPerPhaseIndex.put(2, 0);
 
-        boolean wasOptimized = intersection.optimizeCurrentPhase();
+        int newIndex = intersection.determineNextPhaseIndex();
+        intersection.switchToPhase(newIndex);
 
-        assertFalse(wasOptimized);
         assertEquals(1, intersection.currentPhaseIndex);
     }
 
     @Test
-    void shouldForceNextPhaseWhenbasicDurationIsReached() {
+    void shouldForceNextPhaseWhenBasicDurationIsReached() {
         // Given
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
         intersection.switchToPhase(0);
 
         intersection.getStats().increasePhaseDuration();
@@ -182,7 +175,7 @@ class IntersectionTest {
 
     @Test
     void shouldUpdateStatsDuringProcessStep() {
-        TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
+        TestableIntersection intersection = new TestableIntersection("TEST_TYPE", dummyPhases, dummyParams);
         intersection.switchToPhase(0);
         intersection.vehiclesToReturn = List.of(
                 new Vehicle("vehicle1", Direction.EAST, Direction.SOUTH),

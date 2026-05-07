@@ -1,6 +1,5 @@
 package com.traffic_lights.model;
 
-import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.LaneDTO;
 import com.traffic_lights.dto.intersection.TrafficLightDTO;
 import org.junit.jupiter.api.Test;

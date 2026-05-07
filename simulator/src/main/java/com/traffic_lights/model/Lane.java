@@ -1,14 +1,9 @@
 package com.traffic_lights.model;
 
-import com.traffic_lights.model.LightType;
-import com.traffic_lights.model.TrafficLight;
-import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.LaneDTO;
 import lombok.Getter;
-import com.traffic_lights.model.LightState;
 
 import java.util.ArrayDeque;
-import java.util.Optional;
 import java.util.List;
 import java.util.Queue;
 

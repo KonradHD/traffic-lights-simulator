@@ -1,10 +1,12 @@
 package com.traffic_lights.intersection;
 
+import com.traffic_lights.dto.intersection.IntersectionParameters;
+import com.traffic_lights.intersection.phase.IntersectionPhase;
 import com.traffic_lights.model.Direction;
 import com.traffic_lights.model.Lane;
 import com.traffic_lights.model.Turn;
 import com.traffic_lights.config.IntersectionConfig;
-import com.traffic_lights.dto.Vehicle;
+import com.traffic_lights.model.Vehicle;
 import com.traffic_lights.dto.intersection.IntersectionLayout;
 import com.traffic_lights.dto.intersection.LaneDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +19,8 @@ public class MultiLaneIntersection extends Intersection {
     private final Map<Direction, List<Lane>> roads = new HashMap<>();
 
 
-    public MultiLaneIntersection(String type) {
-        super(type);
+    public MultiLaneIntersection(String type, List<IntersectionPhase> phases, IntersectionParameters parameters) {
+        super(type, phases, parameters);
         initLanes(type);
         activateCurrentPhase();
 

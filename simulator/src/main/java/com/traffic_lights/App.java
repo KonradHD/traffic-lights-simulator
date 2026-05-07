@@ -17,12 +17,14 @@ public class App
     public static void main( String[] args )
     {
         String fileName = "example3.json";
+        String intersectionStyle = "multi";
+        String intersectionType = "MULTI_ASYMMETRIC_LEFT_ARROW";
         try {
 
             SimulationInput input = InputParser.readFile(fileName);
             IntersectionSimulator simulator = new IntersectionSimulator();
     
-            SimulationOutput output = simulator.runSimulation(input.commands(), "MULTI_ASYMMETRIC_LEFT_ARROW");
+            SimulationOutput output = simulator.runSimulation(input.commands(), intersectionStyle, intersectionType);
     
             OutputParser.saveOutput(fileName, output);
             

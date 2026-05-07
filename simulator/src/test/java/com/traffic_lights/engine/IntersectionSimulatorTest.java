@@ -66,7 +66,7 @@ class IntersectionSimulatorTest {
 
         when(mockCommand.execute(any(Intersection.class))).thenReturn(List.of());
 
-        simulator.runSimulation(List.of(mockCommand), "MULTI_LANES_STANDARD");
+        simulator.runSimulation(List.of(mockCommand), "multi", "MULTI_LANES_STANDARD");
 
         verify(mockCommand).execute(intersectionCaptor.capture());
         Intersection capturedIntersection = intersectionCaptor.getValue();
@@ -80,7 +80,7 @@ class IntersectionSimulatorTest {
         Command mockCommand = mock(Command.class);
         when(mockCommand.execute(any(Intersection.class))).thenReturn(List.of());
 
-        simulator.runSimulation(List.of(mockCommand), "STANDARD");
+        simulator.runSimulation(List.of(mockCommand), "multi", "STANDARD");
 
         verify(mockCommand).execute(intersectionCaptor.capture());
         Intersection capturedIntersection = intersectionCaptor.getValue();
@@ -98,7 +98,7 @@ class IntersectionSimulatorTest {
         when(mockStepCommand.execute(any(Intersection.class))).thenReturn(List.of("vehicle2", "vehicle3"));
 
         List<Command> commands = List.of(mockRegularCommand, mockStepCommand);
-        SimulationOutput output = simulator.runSimulation(commands, "STANDARD");
+        SimulationOutput output = simulator.runSimulation(commands, "single", "STANDARD");
 
         List<String> accumulatedVehicles = output.getLeftVehiclesIds();
 

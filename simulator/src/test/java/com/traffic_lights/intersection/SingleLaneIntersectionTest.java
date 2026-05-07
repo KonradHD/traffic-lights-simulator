@@ -1,7 +1,9 @@
 package com.traffic_lights.intersection;
 
 import com.traffic_lights.config.IntersectionConfig;
-import com.traffic_lights.dto.Vehicle;
+import com.traffic_lights.dto.intersection.IntersectionParameters;
+import com.traffic_lights.intersection.phase.IntersectionPhase;
+import com.traffic_lights.model.Vehicle;
 import com.traffic_lights.model.Direction;
 import com.traffic_lights.model.Lane;
 import com.traffic_lights.model.Turn;
@@ -23,6 +25,11 @@ class SingleLaneIntersectionTest {
     private static final String TEST_DIR = "data/test_config/";
     private static final String TEST_CONFIG_FILE = TEST_DIR + "single_lane_config.json";
     private static final String INTERSECTION_TYPE = "STANDARD";
+    private final List<IntersectionPhase> dummyPhases = List.of(
+            new IntersectionPhase(Map.of(), 5, 5, 0),
+            new IntersectionPhase(Map.of(), 5, 5, 0),
+            new IntersectionPhase(Map.of(), 5, 5, 0));
+    private final IntersectionParameters dummyParams = new IntersectionParameters(2, 2);
 
     @BeforeEach
     void setUp() throws Exception {
@@ -81,7 +88,7 @@ class SingleLaneIntersectionTest {
 
     @Test
     void shouldInitializeRoadsCorrectly() throws Exception {
-        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
+        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
 
         Field roadsField = SingleLaneIntersection.class.getDeclaredField("roads");
         roadsField.setAccessible(true);
@@ -96,7 +103,7 @@ class SingleLaneIntersectionTest {
 
     @Test
     void shouldAddVehicleToQueue() throws Exception {
-        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
+        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         Vehicle vehicle = new Vehicle("vehicle1", Direction.NORTH, Direction.SOUTH);
 
         intersection.addVehicleToQueue(vehicle);
@@ -117,7 +124,7 @@ class SingleLaneIntersectionTest {
 
     @Test
     void shouldCountPotentialVehicles() {
-        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
+        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
 
         intersection.addVehicleToQueue(new Vehicle("V1", Direction.NORTH, Direction.SOUTH));
         intersection.addVehicleToQueue(new Vehicle("V2", Direction.SOUTH, Direction.NORTH));
@@ -133,7 +140,7 @@ class SingleLaneIntersectionTest {
 
     @Test
     void shouldLetVehiclesPassWhenNoConflict() {
-        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
+        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
         Vehicle vehicle1 = new Vehicle("vehicle1", Direction.NORTH, Direction.SOUTH);
         Vehicle vehicle2 = new Vehicle("vehicle2", Direction.SOUTH, Direction.NORTH);
 
@@ -151,7 +158,7 @@ class SingleLaneIntersectionTest {
 
     @Test
     void shouldYieldPriorityWhenTurningLeft() {
-        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE);
+        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyParams);
 
         intersection.switchToPhase(1);
         Vehicle vehicle1 = new Vehicle("vehicle1", Direction.NORTH, Direction.EAST);

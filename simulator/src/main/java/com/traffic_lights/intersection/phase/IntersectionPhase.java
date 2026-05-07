@@ -1,4 +1,4 @@
-package com.traffic_lights.intersection;
+package com.traffic_lights.intersection.phase;
 
 import com.traffic_lights.model.Direction;
 import com.traffic_lights.model.Turn;
