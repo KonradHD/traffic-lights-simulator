@@ -30,7 +30,7 @@ class SingleLaneIntersectionTest {
 
         String fakeConfigJson = """
                 {
-                  "configs": {
+                  "intersectionTypes": {
                     "STANDARD": {
                       "roads": {
                         "NORTH": [{"allowedTurns": ["STRAIGHT", "LEFT", "RIGHT"], "trafficLights": []}],

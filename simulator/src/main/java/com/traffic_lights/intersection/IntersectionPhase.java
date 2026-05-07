@@ -43,4 +43,8 @@ public class IntersectionPhase {
         return paths.get(direction);
     }
 
+    public void increaseWaitingTime(){
+        this.waitingTime++;
+    }
+
 }

@@ -23,7 +23,7 @@ class IntersectionConfigTest {
 
         String validJson = """
                 {
-                  "configs": {
+                  "intersectionTypes": {
                     "STANDARD": {
                       "roads": {},
                       "phases": []
@@ -34,7 +34,7 @@ class IntersectionConfigTest {
         Files.writeString(Paths.get(VALID_FILE), validJson);
         String invalidJson = """
                 {
-                  "configs": {
+                  "intersectionTypes": {
                     "STANDARD": 
                 """;
         Files.writeString(Paths.get(INVALID_FILE), invalidJson);

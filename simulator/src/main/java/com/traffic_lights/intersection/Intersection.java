@@ -3,6 +3,7 @@ package com.traffic_lights.intersection;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.IntersectionLayout;
+import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.model.Direction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public abstract class Intersection {
 
     protected List<IntersectionPhase> phases;
     protected int currentPhaseIndex;
+    protected IntersectionParameters parameters;
 
 
     public Intersection(String type) {
@@ -47,6 +49,7 @@ public abstract class Intersection {
                 .stream()
                 .map(dto -> new IntersectionPhase(dto.paths(), dto.basicDuration(), dto.basicDuration(), 0))
                 .toList();
+        parameters = IntersectionConfig.getParameters();
     }
 
 
@@ -107,6 +110,8 @@ public abstract class Intersection {
 
     protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
 
+    protected abstract boolean isAnyVehicleWaiting(IntersectionPhase phase);
+
     protected boolean optimizeCurrentPhase() {
         log.info("Optimizing vehicles flow...");
 
@@ -132,7 +137,7 @@ public abstract class Intersection {
         return false;
     }
 
-    protected int determineNextPhaseIndex() {
+    /*protected int determineNextPhaseIndex() {
         int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
         int maxVehicles = 0;
 
@@ -147,12 +152,44 @@ public abstract class Intersection {
         }
 
         return bestPhaseIndex;
+    }*/
+
+    protected int determineNextPhaseIndex() {
+        int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
+        double maxPriority = -1.0;
+
+        for (int i = 0; i < phases.size(); i++) {
+            if (i == currentPhaseIndex) continue;
+            IntersectionPhase phase = phases.get(currentPhaseIndex);
+            double phasePriority = calculatePhasePriority(phase);
+
+            if (phasePriority > maxPriority) {
+                maxPriority = phasePriority;
+                bestPhaseIndex = i;
+            }
+        }
+        return bestPhaseIndex;
     }
+
+    private void increaseWaitingTime() {
+        for(IntersectionPhase phase : phases){
+            if(phases.indexOf(phase) == currentPhaseIndex){
+                continue;
+            }
+
+            if(isAnyVehicleWaiting(phase)){
+                phase.increaseWaitingTime();
+            }
+        }
+    }
+
+    protected abstract double calculatePhasePriority(IntersectionPhase phase);
 
 
     public List<String> processStep() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         this.stats.increasePhaseDuration();
+        increaseWaitingTime();
 
         if (this.stats.getPhaseDuration() >= currentPhase.getOptimalDuration()) {
             int nextPhaseIndex = determineNextPhaseIndex();
@@ -164,12 +201,11 @@ public abstract class Intersection {
         List<Vehicle> leftVehicles = findVehiclesForCurrentPhase();
 
         if (leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0) {
-            boolean isOptimized = optimizeCurrentPhase();
-            if (isOptimized) {
-                currentPhase = phases.get(currentPhaseIndex);
-                setOptimalPhaseTime(currentPhase);
-                leftVehicles = findVehiclesForCurrentPhase();
-            }
+            int nextPhaseIndex = determineNextPhaseIndex();
+            switchToPhase(nextPhaseIndex);
+            currentPhase = phases.get(currentPhaseIndex);
+            setOptimalPhaseTime(currentPhase);
+            leftVehicles = findVehiclesForCurrentPhase();
         }
 
         this.stats.increaseStepsNumber();

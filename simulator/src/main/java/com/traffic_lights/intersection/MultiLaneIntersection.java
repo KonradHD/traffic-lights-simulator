@@ -172,6 +172,75 @@ public class MultiLaneIntersection extends Intersection {
     }
 
     @Override
+    protected boolean isAnyVehicleWaiting(IntersectionPhase phase){
+        for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
+            Direction dir = entry.getKey();
+            List<Lane> lanes = entry.getValue();
+
+            if (lanes == null || lanes.isEmpty()) {
+                continue;
+            }
+
+            List<Turn> allowedTurns = phase.getTurns(dir);
+
+            if (allowedTurns != null && !allowedTurns.isEmpty()) {
+                for (Lane lane : lanes) {
+                    Queue<Vehicle> queue = lane.getVehicles();
+                    if (queue == null || queue.isEmpty()) {
+                        continue;
+                    }
+
+                    for (Vehicle vehicle : queue) {
+                        Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
+                        if (allowedTurns.contains(intendedTurn)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    @Override
+    protected double calculatePhasePriority(IntersectionPhase phase) {
+        int vehiclesCount = 0;
+        int waitingTime = phase.getWaitingTime();
+
+        for (Map.Entry<Direction, List<Lane>> entry : roads.entrySet()) {
+            Direction dir = entry.getKey();
+            List<Lane> lanes = entry.getValue();
+
+            if (lanes == null || lanes.isEmpty()) {
+                continue;
+            }
+
+            List<Turn> allowedTurns = phase.getTurns(dir);
+
+            if (allowedTurns != null && !allowedTurns.isEmpty()) {
+                for (Lane lane : lanes) {
+                    Queue<Vehicle> queue = lane.getVehicles();
+
+                    if (queue == null || queue.isEmpty()) {
+                        continue;
+                    }
+
+                    for (Vehicle vehicle : queue) {
+                        Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
+
+                        if (allowedTurns.contains(intendedTurn)) {
+                            vehiclesCount++;
+                        }
+                    }
+                }
+            }
+        }
+        return (this.parameters.weightQueue() * vehiclesCount) + (this.parameters.weightWaitTime() * waitingTime);
+    }
+
+
+    @Override
     protected List<Vehicle> findVehiclesForCurrentPhase() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);

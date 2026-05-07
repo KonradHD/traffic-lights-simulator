@@ -71,6 +71,7 @@ public class SingleLaneIntersection extends Intersection {
         this.stats.increaseVehiclesWaiting(dir);
     }
 
+
     @Override
     protected boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
         Direction startingDirection;
@@ -94,6 +95,60 @@ public class SingleLaneIntersection extends Intersection {
         }else{
             return availableTurns != null && availableTurns.contains(intendedTurn) && (intendedTurn == Turn.STRAIGHT || intendedTurn == Turn.RIGHT);
         }
+    }
+
+
+    @Override
+    protected boolean isAnyVehicleWaiting(IntersectionPhase phase){
+        for (Map.Entry<Direction, Lane> entry : roads.entrySet()) {
+            Direction dir = entry.getKey();
+            Queue<Vehicle> queue = entry.getValue().getVehicles();
+
+            if (queue == null || queue.isEmpty()) {
+                continue;
+            }
+
+            List<Turn> allowedTurns = phase.getTurns(dir);
+            if (allowedTurns != null && !allowedTurns.isEmpty()) {
+                for (Vehicle vehicle : queue) {
+                    Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
+                    if (allowedTurns.contains(intendedTurn)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    protected double calculatePhasePriority(IntersectionPhase phase) {
+        int vehiclesCount = 0;
+        int waitingTime = phase.getWaitingTime();
+
+        for (Map.Entry<Direction, Lane> entry : roads.entrySet()) {
+            Direction dir = entry.getKey();
+            Queue<Vehicle> queue = entry.getValue().getVehicles();
+
+            if (queue == null || queue.isEmpty()) {
+                continue;
+            }
+
+            List<Turn> allowedTurns = phase.getTurns(dir);
+
+            if (allowedTurns != null && !allowedTurns.isEmpty()) {
+                for (Vehicle vehicle : queue) {
+                    Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
+
+                    if (allowedTurns.contains(intendedTurn)) {
+                        vehiclesCount++;
+                    }
+                }
+            }
+        }
+
+        return (this.parameters.weightQueue() * vehiclesCount) + (this.parameters.weightWaitTime() * waitingTime);
     }
 
     @Override

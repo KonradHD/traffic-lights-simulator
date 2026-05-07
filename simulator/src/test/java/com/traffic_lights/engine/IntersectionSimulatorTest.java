@@ -32,7 +32,7 @@ class IntersectionSimulatorTest {
 
         String fakeConfigJson = """
                         {
-                          "configs": {
+                          "intersectionTypes": {
                             "STANDARD": {
                               "roads": {
                               },

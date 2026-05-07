@@ -30,7 +30,7 @@ class MultiLaneIntersectionTest {
 
         String fakeConfigJson = """
                 {
-                  "configs": {
+                  "intersectionTypes": {
                     "TEST_MULTI_LANE": {
                       "roads": {
                         "NORTH": [

@@ -65,6 +65,20 @@ class IntersectionTest {
             int index = phases.indexOf(phase);
             return potentialVehiclesPerPhaseIndex.getOrDefault(index, 0);
         }
+
+        @Override
+        public boolean isAnyVehicleWaiting(IntersectionPhase phase) {
+            int index = phases.indexOf(phase);
+            return potentialVehiclesPerPhaseIndex.getOrDefault(index, 0) != 0;
+        }
+
+        @Override
+        protected double calculatePhasePriority(IntersectionPhase phase){
+            int waitingTime = phase.getWaitingTime();
+            int index = phases.indexOf(phase);
+            int vehiclesCount = potentialVehiclesPerPhaseIndex.getOrDefault(index, 0);
+            return (this.parameters.weightQueue() * vehiclesCount) + (this.parameters.weightWaitTime() * waitingTime);
+        }
     }
 
 
@@ -74,7 +88,11 @@ class IntersectionTest {
 
         String configJson = """
                 {
-                  "configs": {
+                  "intersectionParameters": {
+                      "weightQueue": 1.0,
+                      "weightWaitTime": 2.0
+                   },
+                  "intersectionTypes": {
                     "TEST_TYPE": {
                       "roads": {},
                       "phases": [
