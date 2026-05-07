@@ -23,12 +23,21 @@ Stan i fizyczna struktura skrzyżowania zostały zamodelowane z naciskiem na pre
 
 ### Logika skrzyżowań 
 
-Pakiet `intersection` stanowi główny silnik decyzyjny symulatora. Został on zaprojektowany w oparciu o mechanizmy obiektowe, ze szczególnym uwzględnieniem **polimorfizmu** oraz izolacji odpowiedzialności:
+Pakiet `intersection` stanowi architektoniczne serce całego symulatora. Odpowiada za zarządzanie ruchem, fizyczną topologią dróg oraz zaawansowaną decyzyjność dotyczącą zmiany świateł. Architektura tego modułu opiera się na obiektowym podejściu oraz wykorzystuje popularne wzorce projektowe.
 
-* **Abstrakcja i Rozszerzalność:** centralnym punktem logiki jest abstrakcyjna klasa `Intersection`, definiująca ogólny kontrakt i szablon działania dla każdego kroku symulacji. Jej konkretne implementacje – `SingleLaneIntersection` oraz `MultiLaneIntersection` – hermetyzują specyficzną logikę zarządzania pasami ruchu i zliczania pojazdów. Dzięki temu główny kod symulatora nie musi wiedzieć, z jak skomplikowaną infrastrukturą ma do czynienia, a dodanie nowych typów (np. skrzyżowania typu rondo) nie będzie wymagało zmian w rdzeniu systemu
-* **Sterowanie Fazowe:** przepływ ruchu kontrolowany jest przez obiekty `IntersectionPhase`, które określają macierz dozwolonych manewrów w danym cyklu świateł. To one są podstawą dla zaimplementowanych algorytmów adaptacyjnych (Smart Round Robin, System Punktowy), pozwalających na dynamiczne wyliczanie priorytetów faz i optymalnego czasu ich trwania
-* **Separacja statystyk:** cała logika związana ze zbieraniem metryk (czas trwania faz, liczba obsłużonych pojazdów, czasy oczekiwania) została wydzielona do dedykowanej klasy `IntersectionStats`. Taki zabieg odciąża główną klasę skrzyżowania z zadań raportowych, gwarantując czysty kod (Clean Code) i łatwość w generowaniu pliku wyjściowego `output.json`
-* **Zaproponowane rodzaje:** w pliku `data/config/intersection_config.json`
+**Główne komponenty:**
+
+* **`Intersection` (Klasa abstrakcyjna)** – zawiera główne funkcjonalności charakterystyczne dla każdego typu skrzyżowań. Przechowuje aktualny stan, zarządza cyklem życia skrzyżowania i deleguje specjalistyczne zadania do innych klas. Implementuje interfejs dostarczający metryki - `PhaseMetricsProvider`, łącząc warstwę fizyczną z obliczeniową.
+* **`SingleLaneIntersection` oraz `MultiLaneIntersection`** – konkretne implementacje skrzyżowań. Odpowiadają za fizyczną reprezentację infrastruktury (pasy ruchu, kolejki pojazdów). Znajduje się tu logika określająca zasady zarządzania światłami, reguły pierwszeństwa, takie jak zachowanie przy strzałkach warunkowych albo bezkolizyjnych.
+* **`IntersectionFactory`** – wykorzystuje wzorzec fabryki. Izoluje proces tworzenia obiektu od jego użycia. Odpowiada za odczytanie żądanego typu skrzyżowania z pliku konfiguracyjnego i wstrzyknięcie do niego odpowiednich zależności oraz faz.
+* **`IntersectionStats`** – dedykowany kontener na dane analityczne. Zbiera w czasie rzeczywistym metryki takie jak: czas trwania faz, liczba obsłużonych pojazdów czy sumaryczny czas oczekiwania.
+
+**Pakiet `phase`:**
+katalog ten zawiera obliczenia optymalizacyjne dla skrzyżowania. Zamiast zaszywać obliczenia optymalizacyjne w klasach infrastrukturalnych, wydzieliłem je do osobnych struktur:
+* Znajdują się tu klasy takie jak `IntersectionPhase` (przechowująca dozwolone skręty i czasy dla danej fazy) oraz implementacje interfejsu `PhaseScheduler`, które w moim przypadku zawierają się w klasie `HybridPhaseScheduler` implementującej logikę zachowania sygnalizacji.
+* Scheduler na bieżąco analizuje natężenie ruchu i dynamicznie oblicza priorytety oraz optymalny czas trwania zielonego światła.
+
+
 
 ### Data Transfer Object
 
@@ -46,12 +55,9 @@ Aby zachować pełną zgodność z zasadą pojedynczej odpowiedzialności, z gł
 * **Konfiguracja skrzyżowań - `config/IntersectionConfig`:** klasa odpowiedzialna za wczytanie danych konfiguracyjnych symulacje - typy skrzyżowań, parametry optymalizacji ruchu drogowego
 * **Wyjątki - `exception/UndeclaredNextStateException`:** definicja własnego typu wyjątków w celu zwiększenia bezpieczeństwa oraz przejrzystości kodu
 
-### Założenia
-
-### Rozwiązane problemy
 
 
-## Algorytm optymalizacyjny ruch drogowy
+## Algorytm optymalizujący ruch drogowy
 
 Algorytm optymalizacyjny został zaprojektowany z myślą o kompromisie pomiędzy jak największym zwiększeniem przepustowości danego skrzyżowania oraz wyeliminowaniu sytuacji, w której jeden kierowca na niezatłoczonej drodze będzie czekał w nieskończoność.
 
@@ -117,11 +123,13 @@ Projekt został zbudowany z wykorzystaniem nowoczesnych narzędzi ekosystemu Jav
 
 ## Przyszłe możliwości rozwojowe symulacji
 
-- dodanie funkcjonowania trybu NONFUNCTIONAL dla świateł drogowych
-- dodanie interfejsu graficznego
+Obecna architektura symulatora stanowi solidne fundamenty dla bardziej zaawansowanych scenariuszy drogowych. Otwarte są następujące ścieżki rozwoju symulacji:
 
-### Co należałoby poprawić
-
+* **Tryb awaryjny świateł - NONFUNCTIONAL:** wprowadzenie stanu awarii, w którym system dynamicznie przechodzi na klasyczne przepisy określone znakami na skrzyżowaniu. Pozwoliłoby to badać wpływ awarii sygnalizacji na powstawanie zatorów drogowych
+* **Graficzny interfejs:** utworzenie aplikacji webowej lub desktopowej wizualizującej krok po kroku działanie aplikacji. Infrastruktura "fizyczna" jest przygotowana oraz zsychronizowana z główną logiką symulacji, więc dodanie interfejsy graficznego nie byłoby dużym problemem
+* **Obsługa rond:** dodanie nowej klasy skrzyżowania działającej w sposób wielopasmowego ronda z sygnalizacją świetlną
+* **Optymalizacja hiperparametrów:** wdrożenie narzędzia do uruchamiania symulacji seryjnych w celu zautomatyzowanego testowania różnych wag dla `HybridPhaseScheduler`
+* **Benchmarking natężenia ruchu:** stworzenie profili ruchu np. poranny szczyt, ruch nocny i przepuszczanie ich przez różne topologie skrzyżowań. Symulacja pomogłaby wybrać najbardziej optymalne skrzyżowanie dla danej charakterystyki ruchu
 
 
 ## Autor
