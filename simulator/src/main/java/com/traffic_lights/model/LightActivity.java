@@ -1,4 +1,4 @@
-package com.traffic_lights.components.lights;
+package com.traffic_lights.model;
 
 import com.traffic_lights.config.TimeConfig;
 

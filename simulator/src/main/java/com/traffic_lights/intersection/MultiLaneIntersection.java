@@ -1,8 +1,8 @@
-package com.traffic_lights.components.intersection;
+package com.traffic_lights.intersection;
 
-import com.traffic_lights.components.Direction;
-import com.traffic_lights.components.Lane;
-import com.traffic_lights.components.Turn;
+import com.traffic_lights.model.Direction;
+import com.traffic_lights.model.Lane;
+import com.traffic_lights.model.Turn;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.IntersectionLayout;

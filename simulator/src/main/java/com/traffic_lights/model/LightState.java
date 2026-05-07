@@ -1,4 +1,4 @@
-package com.traffic_lights.components.lights;
+package com.traffic_lights.model;
 
 import static com.traffic_lights.exception.UndeclaredNextStateException.undeclaredNextStateException;
 

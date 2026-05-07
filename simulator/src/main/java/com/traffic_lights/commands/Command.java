@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.traffic_lights.components.intersection.Intersection;
+import com.traffic_lights.intersection.Intersection;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME, 

@@ -1,4 +1,4 @@
-package com.traffic_lights.components;
+package com.traffic_lights.model;
 
 public enum Turn {
     STRAIGHT, 

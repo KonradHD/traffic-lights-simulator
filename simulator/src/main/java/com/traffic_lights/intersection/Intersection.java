@@ -1,19 +1,14 @@
-package com.traffic_lights.components.intersection;
+package com.traffic_lights.intersection;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.traffic_lights.components.*;
-import com.traffic_lights.components.lights.RoadLights;
-import com.traffic_lights.components.lights.TrafficLight;
+import com.traffic_lights.model.*;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.IntersectionLayout;
-import com.traffic_lights.dto.intersection.TrafficLightDTO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.traffic_lights.components.lights.TrafficLight.createTrafficLightFromDTO;
 
 @Slf4j
 public abstract class Intersection {

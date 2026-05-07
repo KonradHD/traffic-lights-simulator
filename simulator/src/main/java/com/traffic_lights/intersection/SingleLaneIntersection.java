@@ -1,20 +1,18 @@
-package com.traffic_lights.components.intersection;
+package com.traffic_lights.intersection;
 
 import java.util.*;
 
-import com.traffic_lights.components.*;
-import com.traffic_lights.components.lights.RoadLights;
-import com.traffic_lights.components.lights.TrafficLight;
+import com.traffic_lights.model.*;
 import com.traffic_lights.config.IntersectionConfig;
 import com.traffic_lights.dto.Vehicle;
 
 import com.traffic_lights.dto.intersection.IntersectionLayout;
 import com.traffic_lights.dto.intersection.LaneDTO;
-import com.traffic_lights.dto.intersection.TrafficLightDTO;
+import com.traffic_lights.model.Lane;
+import com.traffic_lights.model.Turn;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.traffic_lights.components.Lane.createLaneFromDTO;
-import static com.traffic_lights.components.lights.TrafficLight.createTrafficLightFromDTO;
+import static com.traffic_lights.model.Lane.createLaneFromDTO;
 
 @Slf4j
 public class SingleLaneIntersection extends Intersection {

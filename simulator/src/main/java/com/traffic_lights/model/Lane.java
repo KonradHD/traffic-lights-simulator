@@ -1,11 +1,11 @@
-package com.traffic_lights.components;
+package com.traffic_lights.model;
 
-import com.traffic_lights.components.lights.LightType;
-import com.traffic_lights.components.lights.TrafficLight;
+import com.traffic_lights.model.LightType;
+import com.traffic_lights.model.TrafficLight;
 import com.traffic_lights.dto.Vehicle;
 import com.traffic_lights.dto.intersection.LaneDTO;
 import lombok.Getter;
-import com.traffic_lights.components.lights.LightState;
+import com.traffic_lights.model.LightState;
 
 import java.util.ArrayDeque;
 import java.util.Optional;
@@ -33,36 +33,18 @@ public class Lane {
         return availableTurns.contains(turn);
     }
 
-    public Optional<TrafficLight> getLightForTurn(Turn intendedTurn) {
-        for (TrafficLight light : trafficLights) {
-            if (light.getTurn() == intendedTurn) {
-                return Optional.of(light);
-            }
-        }
+    public List<TrafficLight> getLightsForTurn(Turn intendedTurn) {
 
-        for (TrafficLight light : trafficLights) {
-            if (light.getType() == LightType.GENERAL) {
-                return Optional.of(light);
-            }
-        }
-
-        return Optional.empty();
+        return trafficLights.stream()
+                .filter(light -> light.getTurnGroup().includes(intendedTurn))
+                .toList();
     }
 
     public boolean isLightGreen(Turn intendedTurn) {
-        for (TrafficLight light : trafficLights) {
-            if (light.getTurn() == intendedTurn && light.getLightState() == LightState.GREEN) {
-                return true;
-            }
-        }
+        List<TrafficLight> applicableLights = getLightsForTurn(intendedTurn);
 
-        for (TrafficLight light : trafficLights) {
-            if (light.getType() == LightType.GENERAL && light.getLightState() == LightState.GREEN) {
-                return availableTurns.contains(intendedTurn);
-            }
-        }
-
-        return false;
+        return applicableLights.stream()
+                .anyMatch(TrafficLight::isGreen);
     }
 
     public static Lane createLaneFromDTO(LaneDTO dto){
@@ -74,7 +56,6 @@ public class Lane {
 
 
     public void applyCurrentPhase(List<Turn> greenTurns) {
-
         if (greenTurns == null || greenTurns.isEmpty()) {
             for (TrafficLight light : trafficLights) {
                 light.setLightState(LightState.RED);
@@ -83,8 +64,10 @@ public class Lane {
         }
 
         for (TrafficLight light : trafficLights) {
+            boolean shouldBeGreen = light.getTurnGroup().getTurns().stream()
+                    .anyMatch(greenTurns::contains);
 
-            if (greenTurns.contains(light.getTurn())) {
+            if (shouldBeGreen) {
                 light.setLightState(LightState.GREEN);
             } else {
                 light.setLightState(LightState.RED);

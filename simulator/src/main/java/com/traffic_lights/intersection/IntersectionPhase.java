@@ -1,7 +1,7 @@
-package com.traffic_lights.components.intersection;
+package com.traffic_lights.intersection;
 
-import com.traffic_lights.components.Direction;
-import com.traffic_lights.components.Turn;
+import com.traffic_lights.model.Direction;
+import com.traffic_lights.model.Turn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;

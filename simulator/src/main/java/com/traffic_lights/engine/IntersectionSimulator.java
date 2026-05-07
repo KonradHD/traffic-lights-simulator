@@ -1,13 +1,12 @@
 package com.traffic_lights.engine;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.traffic_lights.commands.Command;
 import com.traffic_lights.commands.StepCommand;
-import com.traffic_lights.components.intersection.Intersection;
-import com.traffic_lights.components.intersection.MultiLaneIntersection;
-import com.traffic_lights.components.intersection.SingleLaneIntersection;
+import com.traffic_lights.intersection.Intersection;
+import com.traffic_lights.intersection.MultiLaneIntersection;
+import com.traffic_lights.intersection.SingleLaneIntersection;
 import com.traffic_lights.dto.SimulationOutput;
 import lombok.extern.slf4j.Slf4j;
 
