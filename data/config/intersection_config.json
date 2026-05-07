@@ -8,7 +8,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -20,7 +20,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -32,7 +32,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -44,7 +44,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -83,12 +83,12 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               },
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "CONDITIONAL"
               }
             ]
@@ -100,12 +100,12 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               },
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "CONDITIONAL"
               }
             ]
@@ -117,12 +117,12 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               },
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "CONDITIONAL"
               }
             ]
@@ -134,12 +134,12 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               },
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "CONDITIONAL"
               }
             ]
@@ -179,7 +179,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -191,7 +191,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -203,7 +203,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -215,7 +215,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -260,7 +260,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "LEFT",
+                "turnGroup": "LEFT_ONLY",
                 "lightType": "DIRECTIONAL"
               }
             ]
@@ -270,7 +270,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "STRAIGHT_ONLY",
                 "lightType": "GENERAL"
               }
             ]
@@ -280,7 +280,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "GENERAL"
               }
             ]
@@ -292,7 +292,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "LEFT",
+                "turnGroup": "LEFT_ONLY",
                 "lightType": "DIRECTIONAL"
               }
             ]
@@ -302,7 +302,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
                 "lightType": "GENERAL"
               }
             ]
@@ -314,7 +314,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -326,7 +326,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -368,7 +368,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "LEFT",
+                "turnGroup": "LEFT_ONLY",
                 "lightType": "DIRECTIONAL"
               }
             ]
@@ -378,7 +378,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
                 "lightType": "GENERAL"
               }
             ]
@@ -390,7 +390,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "LEFT",
+                "turnGroup": "LEFT_ONLY",
                 "lightType": "DIRECTIONAL"
               }
             ]
@@ -400,7 +400,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
                 "lightType": "GENERAL"
               }
             ]
@@ -412,7 +412,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -424,7 +424,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -462,14 +462,14 @@
           {
             "allowedTurns": ["LEFT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "LEFT", "lightType": "DIRECTIONAL" }
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
             ]
           },
           {
             "allowedTurns": ["STRAIGHT", "RIGHT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "STRAIGHT", "lightType": "GENERAL" },
-              { "lightState": "RED", "turn": "RIGHT", "lightType": "CONDITIONAL" }
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
             ]
           }
         ],
@@ -477,14 +477,14 @@
           {
             "allowedTurns": ["LEFT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "LEFT", "lightType": "DIRECTIONAL" }
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
             ]
           },
           {
             "allowedTurns": ["STRAIGHT", "RIGHT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "STRAIGHT", "lightType": "GENERAL" },
-              { "lightState": "RED", "turn": "RIGHT", "lightType": "CONDITIONAL" }
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
             ]
           }
         ],
@@ -492,14 +492,14 @@
           {
             "allowedTurns": ["LEFT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "LEFT", "lightType": "DIRECTIONAL" }
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
             ]
           },
           {
             "allowedTurns": ["STRAIGHT", "RIGHT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "STRAIGHT", "lightType": "GENERAL" },
-              { "lightState": "RED", "turn": "RIGHT", "lightType": "CONDITIONAL" }
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
             ]
           }
         ],
@@ -507,14 +507,14 @@
           {
             "allowedTurns": ["LEFT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "LEFT", "lightType": "DIRECTIONAL" }
+              { "lightState": "RED", "turnGroup": "LEFT_ONLY", "lightType": "DIRECTIONAL" }
             ]
           },
           {
             "allowedTurns": ["STRAIGHT", "RIGHT"],
             "trafficLights": [
-              { "lightState": "RED", "turn": "STRAIGHT", "lightType": "GENERAL" },
-              { "lightState": "RED", "turn": "RIGHT", "lightType": "CONDITIONAL" }
+              { "lightState": "RED", "turnGroup": "STRAIGHT_AND_RIGHT", "lightType": "GENERAL" },
+              { "lightState": "RED", "turnGroup": "RIGHT_ONLY", "lightType": "CONDITIONAL" }
             ]
           }
         ]
@@ -563,7 +563,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
@@ -575,7 +575,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "STRAIGHT_AND_LEFT",
                 "lightType": "GENERAL"
               }
             ]
@@ -585,12 +585,12 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "GENERAL"
               },
               {
                 "lightState": "RED",
-                "turn": "RIGHT",
+                "turnGroup": "RIGHT_ONLY",
                 "lightType": "CONDITIONAL"
               }
             ]
@@ -602,7 +602,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "LEFT",
+                "turnGroup": "LEFT_ONLY",
                 "lightType": "DIRECTIONAL"
               }
             ]
@@ -612,7 +612,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "STRAIGHT_AND_RIGHT",
                 "lightType": "GENERAL"
               }
             ]
@@ -624,7 +624,7 @@
             "trafficLights": [
               {
                 "lightState": "RED",
-                "turn": "STRAIGHT",
+                "turnGroup": "ALL_DIRECTIONS",
                 "lightType": "GENERAL"
               }
             ]
