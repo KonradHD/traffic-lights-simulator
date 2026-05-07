@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public record IntersectionPhaseDTO(
-    int maxDuration,
+    int basicDuration,
     Map<Direction, List<Turn>> paths
 ) {
 }

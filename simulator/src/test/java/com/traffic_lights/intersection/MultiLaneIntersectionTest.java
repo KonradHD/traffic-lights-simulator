@@ -47,7 +47,7 @@ class MultiLaneIntersectionTest {
                             "NORTH": ["STRAIGHT", "RIGHT", "LEFT"],
                             "SOUTH": ["STRAIGHT"]
                           },
-                          "maxDuration": 5
+                          "basicDuration": 5
                         }
                       ]
                     }

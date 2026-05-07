@@ -97,6 +97,45 @@ public class SingleLaneIntersection extends Intersection {
     }
 
     @Override
+    protected void setOptimalPhaseTime(IntersectionPhase phase){
+        int vehiclesInPhase = 0;
+        int vehiclesOverall = 0;
+        int cycleBasicDuration = getCycleBasicDuration();
+        int phaseBasicDuration = phase.getBasicDuration();
+
+        for(Map.Entry<Direction, Lane> entry : roads.entrySet()){
+            Direction dir = entry.getKey();
+            Queue<Vehicle> queue = roads.get(dir).getVehicles();
+            if (queue == null || queue.isEmpty()) {
+                continue;
+            }
+
+            vehiclesOverall += queue.size();
+            List<Turn> phaseAllowedTurns = phase.getTurns(dir);
+
+            if (phaseAllowedTurns != null && !phaseAllowedTurns.isEmpty()) {
+                for (Vehicle vehicle : queue) {
+                    Turn intendedTurn = dir.calculateTurn(vehicle.endRoad());
+                    if (phaseAllowedTurns.contains(intendedTurn)) {
+                        vehiclesInPhase++;
+                    }
+                }
+            }
+        }
+
+        // Empty intersection
+        if (vehiclesOverall == 0) {
+            phase.setOptimalDuration(phaseBasicDuration);
+            return;
+        }
+
+        double vehicleProportion = (double) vehiclesInPhase / vehiclesOverall;
+        int optimalTime = (int) Math.round(vehicleProportion * cycleBasicDuration);
+        phase.setOptimalDuration(vehiclesInPhase > 0 ? Math.max(1, optimalTime) : 0);
+    }
+
+
+    @Override
     protected List<Vehicle> findVehiclesForCurrentPhase(){
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
         log.info("Looking for new vehicles in phase {}", currentPhaseIndex);

@@ -50,6 +50,12 @@ class IntersectionTest {
         }
 
         @Override
+        protected void setOptimalPhaseTime(IntersectionPhase phase){
+            int optimalTime = phase.getBasicDuration();
+            phase.setOptimalDuration(optimalTime);
+        }
+
+        @Override
         protected List<Vehicle> findVehiclesForCurrentPhase() {
             return vehiclesToReturn;
         }
@@ -72,9 +78,9 @@ class IntersectionTest {
                     "TEST_TYPE": {
                       "roads": {},
                       "phases": [
-                        { "paths": {"NORTH": []}, "maxDuration": 5 },
-                        { "paths": {"SOUTH": []}, "maxDuration": 5 },
-                        { "paths": {"WEST": []}, "maxDuration": 5 }
+                        { "paths": {"NORTH": []}, "basicDuration": 5 },
+                        { "paths": {"SOUTH": []}, "basicDuration": 5 },
+                        { "paths": {"WEST": []}, "basicDuration": 5 }
                       ]
                     }
                   }
@@ -140,7 +146,7 @@ class IntersectionTest {
     }
 
     @Test
-    void shouldForceNextPhaseWhenMaxDurationIsReached() {
+    void shouldForceNextPhaseWhenbasicDurationIsReached() {
         // Given
         TestableIntersection intersection = new TestableIntersection("TEST_TYPE");
         intersection.switchToPhase(0);

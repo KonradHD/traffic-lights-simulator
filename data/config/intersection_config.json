@@ -58,14 +58,14 @@
             "NORTH" : ["LEFT", "STRAIGHT", "RIGHT"],
             "SOUTH": ["LEFT", "STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         },
         {
           "paths": {
             "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
             "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         }
       ]
 
@@ -154,7 +154,7 @@
             "EAST": ["RIGHT"],
             "WEST": ["RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         },
         {
           "paths": {
@@ -163,7 +163,7 @@
             "NORTH": ["RIGHT"],
             "SOUTH": ["RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         }
       ]
     },
@@ -227,25 +227,25 @@
           "paths": {
             "NORTH": ["STRAIGHT", "LEFT", "RIGHT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         },
         {
           "paths": {
             "SOUTH": ["STRAIGHT", "LEFT", "RIGHT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         },
         {
           "paths": {
             "EAST": ["STRAIGHT", "LEFT", "RIGHT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         },
         {
           "paths": {
             "WEST": ["STRAIGHT", "LEFT", "RIGHT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         }
       ]
     },
@@ -339,21 +339,21 @@
             "NORTH" : ["STRAIGHT", "RIGHT"],
             "SOUTH": ["STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         },
         {
           "paths": {
             "NORTH" : ["LEFT"],
             "SOUTH": ["LEFT"]
           },
-          "maxDuration": 3
+          "basicDuration": 3
         },
         {
           "paths": {
             "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
             "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         }
       ]
     },
@@ -437,21 +437,21 @@
             "NORTH" : ["STRAIGHT", "RIGHT"],
             "SOUTH": ["STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         },
         {
           "paths": {
             "NORTH" : ["LEFT"],
             "SOUTH": ["LEFT"]
           },
-          "maxDuration": 3
+          "basicDuration": 3
         },
         {
           "paths": {
             "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
             "EAST": ["LEFT", "STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 5
+          "basicDuration": 5
         }
       ]
     },
@@ -527,14 +527,14 @@
             "EAST": ["RIGHT"],
             "WEST": ["RIGHT"]
           },
-          "maxDuration": 8
+          "basicDuration": 8
         },
         {
           "paths": {
             "NORTH": ["LEFT"],
             "SOUTH": ["LEFT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         },
         {
           "paths": {
@@ -543,14 +543,14 @@
             "NORTH": ["RIGHT"],
             "SOUTH": ["RIGHT"]
           },
-          "maxDuration": 8
+          "basicDuration": 8
         },
         {
           "paths": {
             "WEST": ["LEFT"],
             "EAST": ["LEFT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         }
       ]
     },
@@ -637,21 +637,21 @@
             "NORTH" : ["LEFT", "STRAIGHT", "RIGHT"],
             "SOUTH": ["LEFT", "STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 3
+          "basicDuration": 3
         },
         {
           "paths": {
             "EAST": ["LEFT", "STRAIGHT", "RIGHT"],
             "WEST" : ["STRAIGHT", "RIGHT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         },
         {
           "paths": {
             "WEST" : ["LEFT", "STRAIGHT", "RIGHT"],
             "SOUTH": ["RIGHT"]
           },
-          "maxDuration": 4
+          "basicDuration": 4
         }
       ]
     }

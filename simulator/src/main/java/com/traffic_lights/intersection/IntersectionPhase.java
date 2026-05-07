@@ -16,15 +16,17 @@ import java.util.Map;
 public class IntersectionPhase {
 
     private final Map<Direction, List<Turn>> paths;
-    private int maxDuration;
+    private final int basicDuration;
+    private int optimalDuration;
+    private int waitingTime;
 
 
-    public IntersectionPhase(List<Direction> directions, List<List<Turn>> turns, int maxDuration) {
+    public IntersectionPhase(List<Direction> directions, List<List<Turn>> turns, int basicDuration) {
         if(directions.size() != turns.size()) {
             throw new IllegalArgumentException("Directions and Turns must have the same length");
         }
         paths = new HashMap<>();
-        this.maxDuration = maxDuration;
+        this.basicDuration = basicDuration;
 
         for(int i = 0; i < directions.size(); i++) {
             paths.put(directions.get(i), turns.get(i));

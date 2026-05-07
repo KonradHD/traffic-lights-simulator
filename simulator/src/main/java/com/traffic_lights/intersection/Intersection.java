@@ -45,7 +45,7 @@ public abstract class Intersection {
         phases = layoutTemplate
                 .phases()
                 .stream()
-                .map(dto -> new IntersectionPhase(dto.paths(), dto.maxDuration()))
+                .map(dto -> new IntersectionPhase(dto.paths(), dto.basicDuration(), dto.basicDuration(), 0))
                 .toList();
     }
 
@@ -58,6 +58,9 @@ public abstract class Intersection {
         if (currentPhaseIndex >= phases.size()) {
             currentPhaseIndex = 0;
         }
+        resetWaitingTime();
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+        setOptimalPhaseTime(currentPhase);
 
         this.stats.resetPhaseDuration();
         this.stats.increasePhaseChanges();
@@ -72,11 +75,28 @@ public abstract class Intersection {
         }
 
         this.currentPhaseIndex = index;
+        resetWaitingTime();
+        IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
+        setOptimalPhaseTime(currentPhase);
 
         this.stats.increasePhaseChanges();
         this.stats.resetPhaseDuration();
         activateCurrentPhase();
         log.info("Switched to the intersection phase: {}", this.currentPhaseIndex);
+    }
+
+    protected abstract void setOptimalPhaseTime(IntersectionPhase phase);
+
+    protected int getCycleBasicDuration() {
+        return phases.stream()
+                .mapToInt(IntersectionPhase::getBasicDuration)
+                .sum();
+    }
+
+    protected void resetWaitingTime(){
+        for(IntersectionPhase phase : phases){
+            phase.setWaitingTime(0);
+        }
     }
 
     public abstract void addVehicleToQueue(Vehicle vehicle);
@@ -112,22 +132,44 @@ public abstract class Intersection {
         return false;
     }
 
+    protected int determineNextPhaseIndex() {
+        int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
+        int maxVehicles = 0;
+
+        for (int i = 0; i < phases.size(); i++) {
+            if (i == currentPhaseIndex) continue;
+            int potentialVehicles = countPotentialVehiclesForPhase(phases.get(i));
+
+            if (potentialVehicles > maxVehicles) {
+                maxVehicles = potentialVehicles;
+                bestPhaseIndex = i;
+            }
+        }
+
+        return bestPhaseIndex;
+    }
+
 
     public List<String> processStep() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
-        if(this.stats.getPhaseDuration() == currentPhase.getMaxDuration()){
-            switchToNextPhase();
+        this.stats.increasePhaseDuration();
+
+        if (this.stats.getPhaseDuration() >= currentPhase.getOptimalDuration()) {
+            int nextPhaseIndex = determineNextPhaseIndex();
+            switchToPhase(nextPhaseIndex);
+            currentPhase = phases.get(currentPhaseIndex);
+            setOptimalPhaseTime(currentPhase);
         }
 
         List<Vehicle> leftVehicles = findVehiclesForCurrentPhase();
 
-        if(leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0){
+        if (leftVehicles.isEmpty() && this.stats.getVehiclesWaitingNumber() > 0) {
             boolean isOptimized = optimizeCurrentPhase();
-            if(isOptimized){
+            if (isOptimized) {
+                currentPhase = phases.get(currentPhaseIndex);
+                setOptimalPhaseTime(currentPhase);
                 leftVehicles = findVehiclesForCurrentPhase();
             }
-        }else{
-            this.stats.increasePhaseDuration();
         }
 
         this.stats.increaseStepsNumber();

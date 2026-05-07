@@ -44,14 +44,14 @@ class SingleLaneIntersectionTest {
                             "NORTH": ["STRAIGHT", "RIGHT"],
                             "SOUTH": ["STRAIGHT", "RIGHT"]
                           },
-                          "maxDuration": 5
+                          "basicDuration": 5
                         },
                         {
                           "paths": {
                             "NORTH": ["LEFT"],
                             "SOUTH": ["STRAIGHT"]
                           },
-                          "maxDuration": 5
+                          "basicDuration": 5
                         }
                       ]
                     }
