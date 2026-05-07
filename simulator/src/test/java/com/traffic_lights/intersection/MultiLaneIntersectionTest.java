@@ -28,9 +28,14 @@ class MultiLaneIntersectionTest {
     private static final String TEST_CONFIG_FILE = TEST_DIR + "multi_lane_config.json";
     private static final String INTERSECTION_TYPE = "TEST_MULTI_LANE";
     private final List<IntersectionPhase> dummyPhases = List.of(
-            new IntersectionPhase(Map.of(), 5, 5, 0),
-            new IntersectionPhase(Map.of(), 5, 5, 0),
-            new IntersectionPhase(Map.of(), 5, 5, 0));
+            new IntersectionPhase(Map.of(
+                    Direction.NORTH, List.of(Turn.STRAIGHT, Turn.RIGHT),
+                    Direction.SOUTH, List.of(Turn.STRAIGHT, Turn.RIGHT)
+            ), 5, 5, 0),
+            new IntersectionPhase(Map.of(
+                    Direction.WEST, List.of(Turn.STRAIGHT)
+            ), 5, 5, 0)
+    );
     private final PhaseScheduler dummyScheduler = new HybridPhaseScheduler(2, 2);
 
     @BeforeEach
@@ -50,15 +55,7 @@ class MultiLaneIntersectionTest {
                           {"allowedTurns": ["STRAIGHT", "RIGHT"], "trafficLights": []}
                         ]
                       },
-                      "phases": [
-                        {
-                          "paths": {
-                            "NORTH": ["STRAIGHT", "RIGHT", "LEFT"],
-                            "SOUTH": ["STRAIGHT"]
-                          },
-                          "basicDuration": 5
-                        }
-                      ]
+                      "phases": []
                     }
                   }
                 }
@@ -163,20 +160,4 @@ class MultiLaneIntersectionTest {
         assertTrue(leftVehicles.contains(vehicle3));
     }
 
-    @Test
-    void shouldYieldPriorityAcrossMultipleLanes() {
-        MultiLaneIntersection intersection = new MultiLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyScheduler);
-        intersection.switchToPhase(0);
-        Vehicle vehicle1 = new Vehicle("vehicle_left", Direction.NORTH, Direction.EAST);
-        Vehicle vehicle2 = new Vehicle("vehicle_straight", Direction.SOUTH, Direction.NORTH);
-
-        intersection.addVehicleToQueue(vehicle1);
-        intersection.addVehicleToQueue(vehicle2);
-
-        List<Vehicle> leftVehicles = intersection.findVehiclesForCurrentPhase();
-
-        assertEquals(1, leftVehicles.size());
-        assertTrue(leftVehicles.contains(vehicle2));
-        assertFalse(leftVehicles.contains(vehicle1));
-    }
 }

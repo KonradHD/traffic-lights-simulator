@@ -4,7 +4,6 @@ import com.traffic_lights.intersection.phase.IntersectionPhase;
 import com.traffic_lights.intersection.phase.PhaseMetricsProvider;
 import com.traffic_lights.intersection.phase.PhaseScheduler;
 import com.traffic_lights.model.Vehicle;
-import com.traffic_lights.dto.intersection.IntersectionParameters;
 import com.traffic_lights.model.Direction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +49,7 @@ public abstract class Intersection implements PhaseMetricsProvider {
         this.currentPhaseIndex = index;
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
 
-        resetWaitingTime();
+        currentPhase.setWaitingTime(0);
         int optimalDuration = this.scheduler.calculateOptimalPhaseTime(currentPhase, this, getCycleBasicDuration());
         currentPhase.setOptimalDuration(optimalDuration);
         activateCurrentPhase();
@@ -64,12 +63,6 @@ public abstract class Intersection implements PhaseMetricsProvider {
         return phases.stream()
                 .mapToInt(IntersectionPhase::getBasicDuration)
                 .sum();
-    }
-
-    protected void resetWaitingTime(){
-        for(IntersectionPhase phase : phases){
-            phase.setWaitingTime(0);
-        }
     }
 
 
@@ -94,7 +87,6 @@ public abstract class Intersection implements PhaseMetricsProvider {
         int nextPhaseIndex = determineNextPhaseIndex();
         switchToPhase(nextPhaseIndex);
     }
-
 
 
     public List<String> processStep() {
@@ -131,11 +123,8 @@ public abstract class Intersection implements PhaseMetricsProvider {
     @Override
     public abstract int getVehiclesOverall();
 
-//    protected abstract void setOptimalPhaseTime(IntersectionPhase phase);
     public abstract void addVehicleToQueue(Vehicle vehicle);
     protected abstract boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow);
     protected abstract List<Vehicle> findVehiclesForCurrentPhase();
-//    protected abstract int countPotentialVehiclesForPhase(IntersectionPhase phase);
-//    protected abstract boolean isAnyVehicleWaiting(IntersectionPhase phase);
     protected abstract void activateCurrentPhase();
 }

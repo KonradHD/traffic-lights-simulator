@@ -84,6 +84,11 @@ public class SingleLaneIntersection extends Intersection {
             startingDirection = endDirection.getOpposite();
         }
 
+        Lane lane = roads.get(startingDirection);
+        if (lane == null) {
+            return false;
+        }
+
         Queue<Vehicle> queue = roads.get(startingDirection).getVehicles();
         if (queue == null || queue.isEmpty()) {
             return false;

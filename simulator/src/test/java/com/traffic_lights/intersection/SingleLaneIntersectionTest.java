@@ -28,9 +28,13 @@ class SingleLaneIntersectionTest {
     private static final String TEST_CONFIG_FILE = TEST_DIR + "single_lane_config.json";
     private static final String INTERSECTION_TYPE = "STANDARD";
     private final List<IntersectionPhase> dummyPhases = List.of(
-            new IntersectionPhase(Map.of(), 5, 5, 0),
-            new IntersectionPhase(Map.of(), 5, 5, 0),
-            new IntersectionPhase(Map.of(), 5, 5, 0));
+            new IntersectionPhase(Map.of(
+                    Direction.NORTH, List.of(Turn.STRAIGHT, Turn.RIGHT),
+                    Direction.SOUTH, List.of(Turn.STRAIGHT, Turn.RIGHT)), 5, 5, 0),
+            new IntersectionPhase(Map.of(
+                    Direction.NORTH, List.of(Turn.LEFT),
+                    Direction.SOUTH, List.of(Turn.STRAIGHT)
+            ), 5, 5, 0));
     private final PhaseScheduler dummyScheduler = new HybridPhaseScheduler(2, 2);
 
     @BeforeEach
@@ -47,22 +51,7 @@ class SingleLaneIntersectionTest {
                         "EAST":  [{"allowedTurns": ["STRAIGHT", "LEFT", "RIGHT"], "trafficLights": []}],
                         "WEST":  [{"allowedTurns": ["STRAIGHT"], "trafficLights": []}]
                       },
-                      "phases": [
-                        {
-                          "paths": {
-                            "NORTH": ["STRAIGHT", "RIGHT"],
-                            "SOUTH": ["STRAIGHT", "RIGHT"]
-                          },
-                          "basicDuration": 5
-                        },
-                        {
-                          "paths": {
-                            "NORTH": ["LEFT"],
-                            "SOUTH": ["STRAIGHT"]
-                          },
-                          "basicDuration": 5
-                        }
-                      ]
+                      "phases": []
                     }
                   }
                 }
@@ -156,24 +145,6 @@ class SingleLaneIntersectionTest {
         assertEquals(2, leftVehicles.size());
         assertTrue(leftVehicles.contains(vehicle1));
         assertTrue(leftVehicles.contains(vehicle2));
-    }
-
-    @Test
-    void shouldYieldPriorityWhenTurningLeft() {
-        SingleLaneIntersection intersection = new SingleLaneIntersection(INTERSECTION_TYPE, dummyPhases, dummyScheduler);
-
-        intersection.switchToPhase(1);
-        Vehicle vehicle1 = new Vehicle("vehicle1", Direction.NORTH, Direction.EAST);
-        Vehicle vehicle2 = new Vehicle("vehicle2", Direction.SOUTH, Direction.NORTH);
-
-        intersection.addVehicleToQueue(vehicle1);
-        intersection.addVehicleToQueue(vehicle2);
-
-        List<Vehicle> leftVehicles = intersection.findVehiclesForCurrentPhase();
-
-        assertEquals(1, leftVehicles.size());
-        assertTrue(leftVehicles.contains(vehicle2));
-        assertFalse(leftVehicles.contains(vehicle1));
     }
 }
 

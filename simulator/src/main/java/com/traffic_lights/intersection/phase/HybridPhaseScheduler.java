@@ -15,11 +15,11 @@ public class HybridPhaseScheduler implements PhaseScheduler {
     @Override
     public int determineNextPhaseIndex(List<IntersectionPhase> phases, int currentPhaseIndex, PhaseMetricsProvider metricsProvider) {
         int bestPhaseIndex = (currentPhaseIndex + 1) % phases.size();
-        double maxPriority = -1.0;
+        double maxPriority = 0.0;
 
         for (int i = 0; i < phases.size(); i++) {
             if (i == currentPhaseIndex) continue;
-            IntersectionPhase phase = phases.get(currentPhaseIndex);
+            IntersectionPhase phase = phases.get(i);
             double phasePriority = calculatePhasePriority(phase, metricsProvider);
 
             if (phasePriority > maxPriority) {

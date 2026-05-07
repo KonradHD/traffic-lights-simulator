@@ -84,7 +84,7 @@ class IntersectionSimulatorTest {
         Command mockCommand = mock(Command.class);
         when(mockCommand.execute(any(Intersection.class))).thenReturn(List.of());
 
-        simulator.runSimulation(List.of(mockCommand), "multi", "STANDARD");
+        simulator.runSimulation(List.of(mockCommand), "single", "STANDARD");
 
         verify(mockCommand).execute(intersectionCaptor.capture());
         Intersection capturedIntersection = intersectionCaptor.getValue();
