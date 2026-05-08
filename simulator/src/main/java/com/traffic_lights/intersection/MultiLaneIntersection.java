@@ -13,12 +13,34 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+/**
+ * Represents a complex traffic intersection where each approach may contain multiple physical lanes.
+ * <p>
+ * Unlike a single-lane intersection, this implementation manages independent vehicle queues
+ * for each lane. It includes logic for:
+ * <ul>
+ * <li><b>Lane Routing:</b> automatically directing incoming vehicles to the shortest valid lane
+ * for their intended turn.</li>
+ * <li><b>Conflict Resolution:</b> implementing right-of-way yielding logic e.g. unprotected left turns
+ * yielding to oncoming straight traffic, or conditional right turns.</li>
+ * </ul>
+ * </p>
+ */
 @Slf4j
 public class MultiLaneIntersection extends Intersection {
 
+    /** * The physical topology of the intersection, mapping approach directions to their
+     * respective lists of independent physical lanes.
+     */
     private final Map<Direction, List<Lane>> roads = new HashMap<>();
 
-
+    /**
+     * Constructs a multi-lane intersection and initializes its physical layout.
+     *
+     * @param type The specific configuration identifier.
+     * @param phases The list of traffic phases defining the green-light cycles.
+     * @param scheduler The scheduling algorithm used to manage phase transitions.
+     */
     public MultiLaneIntersection(String type, List<IntersectionPhase> phases, PhaseScheduler scheduler) {
         super(type, phases, scheduler);
         initLanes(type);
@@ -27,6 +49,15 @@ public class MultiLaneIntersection extends Intersection {
         log.info("Created {} intersection", this.intersectionType);
     }
 
+    /**
+     * Parses the global JSON configuration and builds the physical lane objects for this intersection.
+     * <p>
+     * Translates Data Transfer Objects ({@link LaneDTO}) into functioning domain {@link Lane}
+     * objects, maintaining the ordered list of lanes for each cardinal approach.
+     * </p>
+     *
+     * @param type The intersection type used to look up the layout template.
+     */
     private void initLanes(String type){
         IntersectionConfig.loadConfig();
         IntersectionLayout layoutTemplate = IntersectionConfig.getLayoutForType(type.toUpperCase());
@@ -44,6 +75,13 @@ public class MultiLaneIntersection extends Intersection {
         }
     }
 
+    /**
+     * Synchronizes the physical traffic lights of all lanes with the currently active phase.
+     * <p>
+     * Iterates through every lane and applies the list of permitted turns for the active
+     * phase, instructing the lane to turn its relevant lights GREEN and all others RED.
+     * </p>
+     */
     @Override
     protected void activateCurrentPhase() {
         if(phases.isEmpty()){
@@ -65,7 +103,21 @@ public class MultiLaneIntersection extends Intersection {
         }
     }
 
-
+    /**
+     * Receives a new vehicle and assigns it to the optimal physical lane.
+     * <p>
+     * <b>Algorithm:</b>
+     * <ol>
+     * <li>Identifies all lanes on the vehicle's starting road that permit its intended turn.</li>
+     * <li>Finds the lane with the shortest current queue.</li>
+     * <li>Enqueues the vehicle in the selected lane.</li>
+     * </ol>
+     * </p>
+     *
+     * @param vehicle The {@link Vehicle} attempting to enter the intersection.
+     * @throws IllegalArgumentException if the starting direction is not present in the layout.
+     * @throws IllegalStateException if the intersection layout has no lane supporting the intended turn.
+     */
     public void addVehicleToQueue(Vehicle vehicle) {
         Direction startDirection = vehicle.startRoad();
         List<Lane> lanes = roads.get(startDirection);
@@ -85,8 +137,24 @@ public class MultiLaneIntersection extends Intersection {
         this.stats.increaseVehiclesWaiting(startDirection);
     }
 
+    /**
+     * Determines whether an opposing or cross-traffic stream has right-of-way over a specific maneuver.
+     * <p>
+     * This collision-avoidance logic handles:
+     * <ul>
+     * <li><b>Unprotected Left Turns:</b> Must yield to oncoming traffic moving straight or turning right.</li>
+     * <li><b>Conditional Right Turns:</b> Must yield to traffic moving straight from the left intersecting road.</li>
+     * </ul>
+     * </p>
+     *
+     * @param endDirection The current direction of the vehicle checking for priority.
+     * @param phase The currently active traffic phase.
+     * @param rightArrow {@code true} if evaluating a conditional right turn, {@code false} for an unprotected left.
+     * @return {@code true} if there is conflicting traffic that holds priority (vehicle must yield),
+     * {@code false} if the intersection is clear for the maneuver.
+     */
     @Override
-    protected boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
+    protected boolean isSubordinate(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
         Direction startingDirection;
         if (rightArrow) {
             startingDirection = endDirection.getLeftDirection();
@@ -127,7 +195,13 @@ public class MultiLaneIntersection extends Intersection {
         return false;
     }
 
-
+    /**
+     * Calculates the total number of queued vehicles that intend to make maneuvers
+     * permitted by the specified phase.
+     *
+     * @param phase The {@link IntersectionPhase} to evaluate.
+     * @return The count of vehicles waiting for this phase's green lights.
+     */
     @Override
     public int getVehiclesForPhase(IntersectionPhase phase){
         int vehiclesCount = 0;
@@ -163,6 +237,11 @@ public class MultiLaneIntersection extends Intersection {
         return vehiclesCount;
     }
 
+    /**
+     * Aggregates the total number of vehicles waiting across all lanes and directions.
+     *
+     * @return The global queue size of the entire intersection.
+     */
     @Override
     public int getVehiclesOverall(){
         int vehiclesOverall = 0;
@@ -186,6 +265,17 @@ public class MultiLaneIntersection extends Intersection {
     }
 
 
+    /**
+     * Identifies and polls vehicles from the front of the active lanes that can legally 
+     * depart the intersection during the current simulation step.
+     * <p>
+     * The method peeks at the front vehicle of every lane authorized by the current phase.
+     * If the vehicle's intended turn is allowed and it does not need to yield to prioritized 
+     * traffic (via {@link #isSubordinate}), it is removed from the queue and allowed to depart.
+     * </p>
+     *
+     * @return A list of {@link Vehicle} objects that successfully cleared the intersection in this step.
+     */
     @Override
     protected List<Vehicle> findVehiclesForCurrentPhase() {
         IntersectionPhase currentPhase = phases.get(currentPhaseIndex);
@@ -215,12 +305,12 @@ public class MultiLaneIntersection extends Intersection {
                 Turn intendedTurn = direction.calculateTurn(vehicle.endRoad());
 
                 if (intendedTurn != null && availableTurns.contains(intendedTurn)) {
-                    if (intendedTurn == Turn.LEFT && isPrioritized(direction, currentPhase, false)) {
+                    if (intendedTurn == Turn.LEFT && isSubordinate(direction, currentPhase, false)) {
                         log.info("{} on lane {} is turning left and is not prioritized", vehicle.id(), lanes.indexOf(lane));
                         continue;
                     }
 
-                    if (intendedTurn == Turn.RIGHT && isPrioritized(direction, currentPhase, true)) {
+                    if (intendedTurn == Turn.RIGHT && isSubordinate(direction, currentPhase, true)) {
                         log.info("{} on lane {} is turning right with conditional arrow and is not prioritized", vehicle.id(), lanes.indexOf(lane));
                         continue;
                     }

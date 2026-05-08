@@ -2,6 +2,14 @@ package com.traffic_lights.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Represents the cardinal directions available for roads and vehicle movement.
+ * <p>
+ * This enum defines the geographical orientation of the traffic flow and provides
+ * utility methods for spatial logic, such as determining opposite directions,
+ * relative left turns, and calculating specific maneuvers.
+ * </p>
+ */
 public enum Direction {
 
     @JsonProperty("south")
@@ -16,6 +24,11 @@ public enum Direction {
     @JsonProperty("east")
     EAST;
 
+    /**
+     * Identifies the direction directly opposite to the current one.
+     *
+     * @return The {@link Direction} located 180 degrees from this one.
+     */
     public Direction getOpposite() {
         return switch (this) {
             case NORTH -> SOUTH;
@@ -25,6 +38,12 @@ public enum Direction {
         };
     }
 
+    /**
+     * Determines the direction located 90 degrees to the left of the current direction.
+     * This is calculated assuming a clockwise cardinal layout.
+     *
+     * @return The {@link Direction} to the immediate left.
+     */
     public Direction getLeftDirection() {
         return switch (this) {
             case SOUTH -> WEST;
@@ -34,7 +53,22 @@ public enum Direction {
         };
     }
 
-
+    /**
+     * Calculates the specific {@link Turn} required to move from this direction
+     * to a specified destination direction.
+     * <p>
+     * Logic is based on standard intersection geometry:
+     * <ul>
+     * <li>Opposite directions result in {@link Turn#STRAIGHT}.</li>
+     * <li>Clockwise-next directions result in {@link Turn#LEFT} (in a standard cardinal system).</li>
+     * <li>Counter-clockwise directions result in {@link Turn#RIGHT}.</li>
+     * </ul>
+     * </p>
+     *
+     * @param end The destination direction of the vehicle.
+     * @return The calculated {@link Turn} type.
+     * @throws IllegalArgumentException if the {@code end} direction is identical to the starting direction.
+     */
     public Turn calculateTurn(Direction end) {
         // TODO: adding turning around
         if (this == end) {

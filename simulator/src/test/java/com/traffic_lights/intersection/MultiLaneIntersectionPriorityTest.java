@@ -48,9 +48,9 @@ class MultiLaneIntersectionPriorityTest {
         fakeRoads.put(Direction.EAST, List.of(createMockLane(oppositeStraight)));
 
         when(mockPhase.getTurns(Direction.EAST)).thenReturn(List.of(Turn.STRAIGHT));
-        boolean isPrioritized = intersection.isPrioritized(Direction.WEST, mockPhase, false);
+        boolean isSubordinate = intersection.isSubordinate(Direction.WEST, mockPhase, false);
 
-        assertTrue(isPrioritized);
+        assertTrue(isSubordinate);
     }
 
     @Test
@@ -58,9 +58,9 @@ class MultiLaneIntersectionPriorityTest {
         Vehicle oppositeRight = new Vehicle("vehicle2", Direction.EAST, Direction.NORTH);
         fakeRoads.put(Direction.EAST, List.of(createMockLane(oppositeRight)));
         when(mockPhase.getTurns(Direction.EAST)).thenReturn(List.of(Turn.RIGHT));
-        boolean isPrioritized = intersection.isPrioritized(Direction.WEST, mockPhase, false);
+        boolean isSubordinate = intersection.isSubordinate(Direction.WEST, mockPhase, false);
 
-        assertTrue(isPrioritized);
+        assertTrue(isSubordinate);
     }
 
     @Test
@@ -69,9 +69,9 @@ class MultiLaneIntersectionPriorityTest {
         fakeRoads.put(Direction.EAST, List.of(createMockLane(oppositeLeft)));
         when(mockPhase.getTurns(Direction.EAST)).thenReturn(List.of(Turn.LEFT));
 
-        boolean isPrioritized = intersection.isPrioritized(Direction.WEST, mockPhase, false);
+        boolean isSubordinate = intersection.isSubordinate(Direction.WEST, mockPhase, false);
 
-        assertFalse(isPrioritized);
+        assertFalse(isSubordinate);
     }
 
 
@@ -81,9 +81,9 @@ class MultiLaneIntersectionPriorityTest {
         fakeRoads.put(Direction.NORTH, List.of(createMockLane(perpendicularLeft)));
         when(mockPhase.getTurns(Direction.NORTH)).thenReturn(List.of(Turn.LEFT));
 
-        boolean isPrioritized = intersection.isPrioritized(Direction.EAST, mockPhase, true);
+        boolean isSubordinate = intersection.isSubordinate(Direction.EAST, mockPhase, true);
 
-        assertFalse(isPrioritized);
+        assertFalse(isSubordinate);
     }
 
 
@@ -93,8 +93,8 @@ class MultiLaneIntersectionPriorityTest {
         fakeRoads.put(Direction.EAST, List.of(createMockLane(oppositeStraight)));
         when(mockPhase.getTurns(Direction.EAST)).thenReturn(null);
 
-        boolean isPrioritized = intersection.isPrioritized(Direction.WEST, mockPhase, false);
+        boolean isSubordinate = intersection.isSubordinate(Direction.WEST, mockPhase, false);
 
-        assertFalse(isPrioritized);
+        assertFalse(isSubordinate);
     }
 }

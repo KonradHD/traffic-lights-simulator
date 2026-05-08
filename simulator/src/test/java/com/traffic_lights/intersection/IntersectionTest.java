@@ -44,7 +44,7 @@ class IntersectionTest {
         public void addVehicleToQueue(Vehicle vehicle) {}
 
         @Override
-        protected boolean isPrioritized(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
+        protected boolean isSubordinate(Direction endDirection, IntersectionPhase phase, boolean rightArrow) {
             return true;
         }
 

@@ -10,10 +10,36 @@ import com.traffic_lights.utils.OutputParser;
 
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * The main entry point for the Traffic Light Simulator.
+ * <p>
+ * This class handles command-line arguments, initializes the simulation environment,
+ * and orchestrates the process of reading input, executing the simulation logic,
+ * and saving the results.
+ * </p>
+ */
 @Slf4j
 public class App 
 {
+
+    /**
+     * Main method that serves as the application lifecycle controller.
+     * <p>
+     * Logic flow:
+     * <ol>
+     * <li>Validates command-line arguments.</li>
+     * <li>Determines {@code intersectionType} and derives {@code intersectionStyle}</li>
+     * <li>Parses the input JSON file into a sequence of commands.</li>
+     * <li>Invokes the {@link IntersectionSimulator} to process the logic.</li>
+     * <li>Persists the resulting {@link SimulationOutput} to the specified file.</li>
+     * </ol>
+     * </p>
+     *
+     * @param args Command-line arguments:
+     * [0] - Path to input JSON file (Required).
+     * [1] - Path to output JSON file (Required).
+     * [2] - Intersection type string (Optional, defaults to "MULTI_LANES_STANDARD").
+     */
     public static void main(String[] args)
     {
         if (args.length < 2) {
